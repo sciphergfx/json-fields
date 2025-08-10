@@ -521,13 +521,13 @@ function App() {
                   uiLibrary="chakra"
                   customStyles={customTableStyles}
                   initialJson={tableJsonInput}
-                  onSave={(nestedData, flatData) => {
+                  onSave={(nestedData) => {
                     console.log('Table data saved:', nestedData);
                   }}
                   onCancel={() => {
                     console.log('Table editing cancelled');
                   }}
-                  onFieldChange={(key, value, fullData) => {
+                  onFieldChange={(key, value) => {
                     console.log(`Field ${key} changed to:`, value);
                   }}
                   saveButtonText="💾 Save Table"
@@ -599,13 +599,13 @@ function App() {
                   columns={2}
                   initialJson={formJsonInput}
                   fieldConfig={sampleFieldConfig}
-                  onSave={(nestedData, flatData) => {
+                  onSave={(nestedData) => {
                     console.log('Form data saved:', nestedData);
                   }}
                   onCancel={() => {
                     console.log('Form cancelled');
                   }}
-                  onFieldChange={(key, value, fullData) => {
+                  onFieldChange={(key, value) => {
                     console.log(`Field ${key} changed to:`, value);
                   }}
                   saveButtonText="💾 Save Form"
