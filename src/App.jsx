@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Container, Tabs, Text } from "@chakra-ui/react";
-import JsonToTable from "./components/JsonToTable";
-import JsonToFields from "./components/JsonToFields"; 
+import { JsonToTable, JsonToFields } from "../lib";
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from "./utils/storage";
 
 function App() {
@@ -10,38 +9,550 @@ function App() {
     getStorageItem(STORAGE_KEYS.TAB_PREFERENCE, "table")
   );
 
+  // Form demo state
+  const [formJsonInput, setFormJsonInput] = useState('');
+  
+  // Table demo state
+  const [tableJsonInput, setTableJsonInput] = useState('');
+
   // Save tab preference when it changes
   useEffect(() => {
     setStorageItem(STORAGE_KEYS.TAB_PREFERENCE, activeTab);
   }, [activeTab]);
 
+  // Sample JSON data for table demo
+  const sampleTableJson = JSON.stringify([
+    { id: 1, name: "John Doe", email: "john@example.com", role: "Developer", salary: 75000, active: true },
+    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Designer", salary: 68000, active: true },
+    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "Manager", salary: 85000, active: false },
+    { id: 4, name: "Alice Brown", email: "alice@example.com", role: "Developer", salary: 72000, active: true },
+  ], null, 2);
+
+  // Sample JSON data for form demo
+  const sampleFormJson = JSON.stringify({
+    user: {
+      name: "John Doe",
+      email: "john@example.com",
+      age: 30,
+      isActive: true,
+      preferences: {
+        theme: "dark",
+        notifications: true
+      }
+    },
+    settings: {
+      language: "en",
+      timezone: "UTC",
+      autoSave: false
+    }
+  }, null, 2);
+
+  const loadSampleTable = () => {
+    setTableJsonInput(sampleTableJson);
+  };
+
+  const loadSampleForm = () => {
+    setFormJsonInput(sampleFormJson);
+  };
+ 
+  const customTableStyles = {
+    container: {
+      background: '#1a1a1a',
+      borderRadius: '8px',
+      padding: '24px',
+      border: '1px solid #2d2d2d',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
+    },
+    heading: {
+      color: '#ffffff',
+      fontSize: '24px',
+      fontWeight: '600',
+      marginBottom: '8px',
+      letterSpacing: '-0.025em',
+    },
+    inputContainer: {
+      background: '#262626',
+      borderRadius: '6px',
+      padding: '16px',
+      border: '1px solid #404040',
+      marginBottom: '16px',
+    },
+    textarea: {
+      background: '#1a1a1a',
+      border: '1px solid #404040',
+      borderRadius: '6px',
+      color: '#ffffff',
+      fontSize: '14px',
+      fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+      padding: '12px',
+      transition: 'border-color 0.2s ease',
+      _focus: {
+        borderColor: '#10b981',
+        outline: 'none',
+        boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)',
+      }
+    },
+    buttonGroup: {
+      justifyContent: 'flex-start',
+      gap: '12px',
+    },
+    button: {
+      background: '#10b981',
+      color: 'white',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      border: 'none',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#059669',
+      }
+    },
+    secondaryButton: {
+      background: 'transparent',
+      color: '#a3a3a3',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      border: '1px solid #404040',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#262626',
+        borderColor: '#525252',
+        color: '#ffffff',
+      }
+    },
+    tableContainer: {
+      background: '#1a1a1a',
+      borderRadius: '6px',
+      marginTop: '24px',
+      border: '1px solid #2d2d2d',
+      overflow: 'hidden',
+    },
+    table: {
+      width: '100%',
+    },
+    th: {
+      background: '#262626',
+      color: '#a3a3a3',
+      fontWeight: '500',
+      fontSize: '12px',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      padding: '12px 16px',
+      borderBottom: '1px solid #2d2d2d',
+    },
+    td: {
+      padding: '12px 16px',
+      borderBottom: '1px solid #2d2d2d',
+      color: '#ffffff',
+    },
+    input: {
+      background: 'transparent',
+      border: 'none',
+      color: '#ffffff',
+      fontSize: '14px',
+      width: '100%',
+      padding: '4px 8px',
+      borderRadius: '4px',
+      transition: 'background-color 0.2s ease',
+      _focus: {
+        outline: 'none',
+        background: '#262626',
+      }
+    },
+    controlButtons: {
+      justifyContent: 'flex-start',
+      gap: '12px',
+      marginTop: '24px',
+      paddingTop: '16px',
+      borderTop: '1px solid #2d2d2d',
+    },
+    saveButton: {
+      background: '#10b981',
+      color: 'white',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      marginRight: '16px',
+      fontWeight: '500',
+      border: 'none',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#059669',
+      }
+    },
+    cancelButton: {
+      background: 'transparent',
+      color: '#ef4444',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      border: '1px solid #ef4444',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#ef4444',
+        color: 'white',
+      }
+    }
+  };
+
+  const customFormStyles = {
+    container: {
+      background: '#1a1a1a',
+      borderRadius: '8px',
+      padding: '24px',
+      border: '1px solid #2d2d2d',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
+    },
+    heading: {
+      color: '#ffffff',
+      fontSize: '24px',
+      fontWeight: '600',
+      marginBottom: '8px',
+      letterSpacing: '-0.025em',
+    },
+    inputContainer: {
+      background: '#262626',
+      borderRadius: '6px',
+      padding: '16px',
+      border: '1px solid #404040',
+      marginBottom: '16px',
+    },
+    formCard: {
+      background: '#1a1a1a',
+      borderRadius: '6px',
+      padding: '24px',
+      marginTop: '24px',
+      border: '1px solid #2d2d2d',
+    },
+    formStack: {
+      gap: '20px',
+    },
+    fieldContainer: {
+      marginBottom: '20px',
+    },
+    fieldLabel: {
+      color: '#ffffff',
+      fontWeight: '500',
+      marginBottom: '8px',
+      fontSize: '14px',
+      display: 'block',
+    },
+    input: {
+      background: '#262626',
+      border: '1px solid #404040',
+      borderRadius: '6px',
+      color: '#ffffff',
+      padding: '8px 12px',
+      fontSize: '14px',
+      width: '100%',
+      transition: 'border-color 0.2s ease',
+      _focus: {
+        borderColor: '#10b981',
+        outline: 'none',
+        boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)',
+      }
+    },
+    textarea: {
+      background: '#262626',
+      border: '1px solid #404040',
+      borderRadius: '6px',
+      color: '#ffffff',
+      padding: '12px',
+      fontSize: '14px',
+      fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+      width: '100%',
+      minHeight: '120px',
+      transition: 'border-color 0.2s ease',
+      _focus: {
+        borderColor: '#10b981',
+        outline: 'none',
+        boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)',
+      }
+    },
+    checkbox: {
+      width: '16px',
+      height: '16px',
+      accentColor: '#10b981',
+    },
+    label: {
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      color: '#ffffff',
+      fontSize: '14px',
+    },
+    button: {
+      background: '#10b981',
+      color: 'white',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      border: 'none',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#059669',
+      }
+    },
+    secondaryButton: {
+      background: 'transparent',
+      color: '#a3a3a3',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      border: '1px solid #404040',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#262626',
+        borderColor: '#525252',
+        color: '#ffffff',
+      }
+    },
+    buttonGroup: {
+      justifyContent: 'flex-start',
+      gap: '16px',
+    },
+    controlButtons: {
+      justifyContent: 'flex-start',
+      gap: '16px',
+      marginTop: '24px',
+      paddingTop: '16px',
+      borderTop: '1px solid #2d2d2d',
+    },
+    saveButton: {
+      background: '#10b981',
+      color: 'white',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      border: 'none',
+      marginRight: '16px',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#059669',
+      }
+    },
+    cancelButton: {
+      background: 'transparent',
+      color: '#ef4444',
+      borderRadius: '6px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      border: '1px solid #ef4444',
+      transition: 'all 0.2s ease',
+      _hover: {
+        background: '#ef4444',
+        color: 'white',
+      }
+    }
+  };
+
   return (
-    <Box minH="100vh" bg="gray.50" _dark={{ bg: "gray.900" }}>
-      <Container maxW="8xl" py={4}>
-        <Tabs.Root
-          value={activeTab}
-          onValueChange={(e) => setActiveTab(e.value)}
-          variant="enclosed"
-        >
-          <Tabs.List>
-            <Tabs.Trigger value="table">
-              <Text fontSize="lg">📊</Text>
-              <Text ml={2}>JSON to Table</Text>
-            </Tabs.Trigger>
-            <Tabs.Trigger value="fields">
-              <Text fontSize="lg">📝</Text>
-              <Text ml={2}>JSON to Form Fields</Text>
-            </Tabs.Trigger>
-          </Tabs.List>
+    <Box minH="100vh" bg="#0f0f0f">
+      {/* Header */}
+      <Box bg="#1a1a1a" borderBottom="1px solid #2d2d2d" px={6} py={4}>
+        <Text fontSize="28px" fontWeight="700" color="#ffffff" letterSpacing="-0.025em" mb={1}>
+          JSON to Table Library Demo
+        </Text>
+        <Text fontSize="16px" color="#a3a3a3" fontWeight="400">
+          Components for converting JSON to tables and forms
+        </Text>
+      </Box>
 
-          <Tabs.Content value="table">
-            <JsonToTable />
-          </Tabs.Content>
+      {/* Main Content */}
+      <Container maxW="8xl" py={6}>
+        <Box bg="#1a1a1a" borderRadius="8px" border="1px solid #2d2d2d" overflow="hidden">
+          <Tabs.Root
+            value={activeTab}
+            onValueChange={(e) => setActiveTab(e.value)}
+          >
+            <Tabs.List bg="#262626" borderBottom="1px solid #2d2d2d" p={0}>
+              <Tabs.Trigger 
+                value="table"
+                bg="transparent"
+                color="#a3a3a3"
+                px={5}
+                py={3}
+                fontSize="14px"
+                fontWeight="500"
+                borderRight="1px solid #2d2d2d"
+                borderRadius={0}
+                transition="all 0.2s ease"
+                _selected={{
+                  color: "#ffffff",
+                  bg: "#1a1a1a",
+                  borderBottom: "2px solid #10b981"
+                }}
+                _hover={{
+                  color: "#ffffff",
+                  bg: "#333333"
+                }}
+              >
+                <Text fontSize="lg">📊</Text>
+                <Text ml={2}>JSON to Table</Text>
+              </Tabs.Trigger>
+              <Tabs.Trigger 
+                value="fields"
+                bg="transparent"
+                color="#a3a3a3"
+                px={5}
+                py={3}
+                fontSize="14px"
+                fontWeight="500"
+                borderRadius={0}
+                transition="all 0.2s ease"
+                _selected={{
+                  color: "#ffffff",
+                  bg: "#1a1a1a",
+                  borderBottom: "2px solid #10b981"
+                }}
+                _hover={{
+                  color: "#ffffff",
+                  bg: "#333333"
+                }}
+              >
+                <Text fontSize="lg">📝</Text>
+                <Text ml={2}>JSON to Form Fields</Text>
+              </Tabs.Trigger>
+            </Tabs.List>
 
-          <Tabs.Content value="fields">
-            <JsonToFields />
-          </Tabs.Content>
-        </Tabs.Root>
+            <Box bg="#1a1a1a">
+              <Tabs.Content value="table" p={6}>
+                {/* Demo Controls */}
+                <Box mb={6} p={4} bg="#262626" borderRadius="6px" border="1px solid #404040">
+                  <Text fontSize="16px" fontWeight="600" color="#ffffff" mb={3}>
+                    Demo Controls
+                  </Text>
+                  <Box display="flex" gap="16px" flexWrap="wrap">
+                    <Box
+                      as="button"
+                      onClick={loadSampleTable}
+                      bg="#10b981"
+                      color="white"
+                      borderRadius="6px"
+                      px="16px"
+                      py="8px"
+                      fontSize="14px"
+                      fontWeight="500"
+                      border="none"
+                      cursor="pointer"
+                      transition="all 0.2s ease"
+                      _hover={{ bg: "#059669" }}
+                    >
+                      📊 Load Sample Data
+                    </Box>
+                    <Box
+                      as="button"
+                      onClick={() => setTableJsonInput('')}
+                      bg="transparent"
+                      color="#a3a3a3"
+                      borderRadius="6px"
+                      px="16px"
+                      py="8px"
+                      fontSize="14px"
+                      fontWeight="500"
+                      border="1px solid #404040"
+                      cursor="pointer"
+                      transition="all 0.2s ease"
+                      _hover={{ bg: "#262626", borderColor: "#525252", color: "#ffffff" }}
+                    >
+                      🗑️ Clear Input
+                    </Box>
+                  </Box>
+                </Box>
+
+                <JsonToTable 
+                  uiLibrary="chakra"
+                  customStyles={customTableStyles}
+                  initialJson={tableJsonInput}
+                  onSave={(nestedData, flatData) => {
+                    console.log('Table data saved:', nestedData);
+                  }}
+                  onCancel={() => {
+                    console.log('Table editing cancelled');
+                  }}
+                  onFieldChange={(key, value, fullData) => {
+                    console.log(`Field ${key} changed to:`, value);
+                  }}
+                  saveButtonText="💾 Save Table"
+                  cancelButtonText="🔄 Reset Table"
+                />
+              </Tabs.Content>
+
+              <Tabs.Content value="fields" p={6}>
+                {/* Demo Controls */}
+                <Box mb={6} p={4} bg="#262626" borderRadius="6px" border="1px solid #404040">
+                  <Text fontSize="16px" fontWeight="600" color="#ffffff" mb={3}>
+                    Demo Controls
+                  </Text>
+                  <Box display="flex" gap="16px" flexWrap="wrap">
+                    <Box
+                      as="button"
+                      onClick={loadSampleForm}
+                      bg="#10b981"
+                      color="white"
+                      borderRadius="6px"
+                      px="16px"
+                      py="8px"
+                      fontSize="14px"
+                      fontWeight="500"
+                      border="none"
+                      cursor="pointer"
+                      transition="all 0.2s ease"
+                      _hover={{ bg: "#059669" }}
+                    >
+                      📝 Load Sample Data
+                    </Box>
+                    <Box
+                      as="button"
+                      onClick={() => setFormJsonInput('')}
+                      bg="transparent"
+                      color="#a3a3a3"
+                      borderRadius="6px"
+                      px="16px"
+                      py="8px"
+                      fontSize="14px"
+                      fontWeight="500"
+                      border="1px solid #404040"
+                      cursor="pointer"
+                      transition="all 0.2s ease"
+                      _hover={{ bg: "#262626", borderColor: "#525252", color: "#ffffff" }}
+                    >
+                      🗑️ Clear Input
+                    </Box>
+                  </Box>
+                </Box>
+
+                <JsonToFields 
+                  uiLibrary="chakra"
+                  customStyles={customFormStyles}
+                  columns={2}
+                  initialJson={formJsonInput}
+                  onSave={(nestedData, flatData) => {
+                    console.log('Form data saved:', nestedData);
+                  }}
+                  onCancel={() => {
+                    console.log('Form cancelled');
+                  }}
+                  onFieldChange={(key, value, fullData) => {
+                    console.log(`Field ${key} changed to:`, value);
+                  }}
+                  saveButtonText="💾 Save Form"
+                  cancelButtonText="🔄 Reset Form"
+                />
+              </Tabs.Content>
+            </Box>
+          </Tabs.Root>
+        </Box>
       </Container>
     </Box>
   );
