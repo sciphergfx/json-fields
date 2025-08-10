@@ -24,6 +24,7 @@ export interface JsonToFieldsProps {
   customStyles?: Record<string, React.CSSProperties>;
   showControls?: boolean;
   showJsonInput?: boolean;
+  columns?: number;
   [key: string]: any;
 }
 

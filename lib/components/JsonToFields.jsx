@@ -15,6 +15,7 @@ import { flattenObject, unflattenObject, getInputType, parseJsonSafely, getDispl
  * @param {Object} props.customStyles - Custom styles object
  * @param {boolean} props.showControls - Whether to show save/cancel buttons
  * @param {boolean} props.showJsonInput - Whether to show JSON input textarea
+ * @param {number} props.columns - Number of columns for form layout (default: 1)
  */
 const JsonToFields = ({
   uiLibrary = 'chakra',
@@ -27,6 +28,7 @@ const JsonToFields = ({
   customStyles = {},
   showControls = true,
   showJsonInput = true,
+  columns = 1,
   ...props
 }) => {
   const [jsonInput, setJsonInput] = useState(initialJson);
@@ -37,27 +39,19 @@ const JsonToFields = ({
 
   const UI = getUIComponents(uiLibrary);
 
-  const sampleJson = JSON.stringify({
-    user: {
-      name: "John Doe",
-      email: "john@example.com",
-      age: 30,
-      isActive: true,
-      preferences: {
-        theme: "dark",
-        notifications: true
-      }
-    },
-    settings: {
-      language: "en",
-      timezone: "UTC"
-    }
-  }, null, 2);
+
 
   useEffect(() => {
     if (initialJson) {
       setJsonInput(initialJson);
       parseJson(initialJson);
+    } else if (initialJson === '') {
+      // Clear everything when initialJson is explicitly set to empty string
+      setJsonInput('');
+      setFormData({});
+      setOriginalFormData({});
+      setParsedJson(null);
+      setError('');
     }
   }, [initialJson]); // parseJson is stable, no need to include
 
@@ -105,10 +99,7 @@ const JsonToFields = ({
     }
   };
 
-  const loadSample = () => {
-    setJsonInput(sampleJson);
-    parseJson(sampleJson);
-  };
+
 
   const renderFormField = (key, value) => {
     const inputType = getInputType(value);
@@ -205,6 +196,58 @@ const JsonToFields = ({
     );
   };
 
+  // Function to render form fields in columns
+  const renderFormFields = () => {
+    const formEntries = Object.entries(formData);
+    
+    if (columns <= 1) {
+      // Single column layout (default)
+      return (
+        <UI.VStack 
+          className={getUIClasses(uiLibrary, 'VStack')}
+          style={{ gap: '1rem', ...customStyles.formStack }}
+        >
+          {formEntries.map(([key, value]) => renderFormField(key, value))}
+        </UI.VStack>
+      );
+    }
+
+    // Multi-column layout
+    const fieldsPerColumn = Math.ceil(formEntries.length / columns);
+    const columnGroups = [];
+    
+    for (let i = 0; i < columns; i++) {
+      const startIndex = i * fieldsPerColumn;
+      const endIndex = Math.min(startIndex + fieldsPerColumn, formEntries.length);
+      columnGroups.push(formEntries.slice(startIndex, endIndex));
+    }
+
+    const gridStyles = {
+      display: 'grid',
+      gridTemplateColumns: `repeat(${columns}, 1fr)`,
+      gap: '2rem',
+      width: '100%',
+      ...customStyles.formGrid
+    };
+
+    return (
+      <UI.Box 
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={gridStyles}
+      >
+        {columnGroups.map((columnFields, columnIndex) => (
+          <UI.VStack 
+            key={columnIndex}
+            className={getUIClasses(uiLibrary, 'VStack')}
+            style={{ gap: '1rem', ...customStyles.formColumn }}
+          >
+            {columnFields.map(([key, value]) => renderFormField(key, value))}
+          </UI.VStack>
+        ))}
+      </UI.Box>
+    );
+  };
+
   return (
     <UI.Container 
       className={getUIClasses(uiLibrary, 'Container')}
@@ -215,12 +258,7 @@ const JsonToFields = ({
         className={getUIClasses(uiLibrary, 'VStack')}
         style={{ gap: '1rem', ...customStyles.stack }}
       >
-        <UI.Heading 
-          className={getUIClasses(uiLibrary, 'Heading')}
-          style={customStyles.heading}
-        >
-          JSON to Form Fields
-        </UI.Heading>
+
 
         {showJsonInput && (
           <>
@@ -241,25 +279,7 @@ const JsonToFields = ({
               />
             </UI.Box>
 
-            <UI.HStack 
-              className={getUIClasses(uiLibrary, 'HStack')}
-              style={{ gap: '0.5rem', ...customStyles.buttonGroup }}
-            >
-              <UI.Button
-                onClick={() => parseJson()}
-                className={getUIClasses(uiLibrary, 'Button', 'default')}
-                style={customStyles.button}
-              >
-                Generate Form
-              </UI.Button>
-              <UI.Button
-                onClick={loadSample}
-                className={getUIClasses(uiLibrary, 'Button', 'secondary')}
-                style={customStyles.secondaryButton}
-              >
-                Load Sample
-              </UI.Button>
-            </UI.HStack>
+
           </>
         )}
 
@@ -277,14 +297,7 @@ const JsonToFields = ({
             className={getUIClasses(uiLibrary, 'Card')}
             style={{ width: '100%', padding: '1rem', ...customStyles.formCard }}
           >
-            <UI.VStack 
-              className={getUIClasses(uiLibrary, 'VStack')}
-              style={{ gap: '1rem', ...customStyles.formStack }}
-            >
-              {Object.entries(formData).map(([key, value]) => 
-                renderFormField(key, value)
-              )}
-            </UI.VStack>
+            {renderFormFields()}
           </UI.Card>
         )}
 

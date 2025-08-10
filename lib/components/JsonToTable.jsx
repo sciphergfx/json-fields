@@ -34,17 +34,18 @@ const JsonToTable = ({
 
   const UI = getUIComponents(uiLibrary);
 
-  const sampleJson = JSON.stringify([
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Developer", salary: 75000 },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Designer", salary: 68000 },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "Manager", salary: 85000 },
-    { id: 4, name: "Alice Brown", email: "alice@example.com", role: "Developer", salary: 72000 },
-  ], null, 2);
+
 
   useEffect(() => {
     if (initialJson) {
       setJsonInput(initialJson);
       parseJson(initialJson);
+    } else if (initialJson === '') {
+      // Clear everything when initialJson is explicitly set to empty string
+      setJsonInput('');
+      setTableData(null);
+      setEditableData(null);
+      setError('');
     }
   }, [initialJson]); // parseJson is stable, no need to include
 
@@ -106,10 +107,7 @@ const JsonToTable = ({
     }
   };
 
-  const loadSample = () => {
-    setJsonInput(sampleJson);
-    parseJson(sampleJson);
-  };
+
 
   const getColumns = () => {
     if (!tableData || tableData.length === 0) return [];
@@ -192,12 +190,7 @@ const JsonToTable = ({
         className={getUIClasses(uiLibrary, 'VStack')}
         style={{ gap: '1rem', ...customStyles.stack }}
       >
-        <UI.Heading 
-          className={getUIClasses(uiLibrary, 'Heading')}
-          style={customStyles.heading}
-        >
-          JSON to Table Converter
-        </UI.Heading>
+
 
         <UI.Box 
           className={getUIClasses(uiLibrary, 'Box')}
@@ -209,6 +202,7 @@ const JsonToTable = ({
             placeholder="Paste your JSON data here..."
             className={getUIClasses(uiLibrary, 'Textarea')}
             style={{ 
+             width: '100%',
               minHeight: '150px', 
               fontFamily: 'monospace',
               ...customStyles.textarea 
@@ -216,25 +210,7 @@ const JsonToTable = ({
           />
         </UI.Box>
 
-        <UI.HStack 
-          className={getUIClasses(uiLibrary, 'HStack')}
-          style={{ gap: '0.5rem', ...customStyles.buttonGroup }}
-        >
-          <UI.Button
-            onClick={() => parseJson()}
-            className={getUIClasses(uiLibrary, 'Button', 'default')}
-            style={customStyles.button}
-          >
-            Generate Table
-          </UI.Button>
-          <UI.Button
-            onClick={loadSample}
-            className={getUIClasses(uiLibrary, 'Button', 'secondary')}
-            style={customStyles.secondaryButton}
-          >
-            Load Sample
-          </UI.Button>
-        </UI.HStack>
+
 
         {error && (
           <UI.Alert 
@@ -249,6 +225,7 @@ const JsonToTable = ({
 
         {showControls && editableData && (
           <UI.HStack 
+            gap="2"
             className={getUIClasses(uiLibrary, 'HStack')}
             style={{ gap: '0.5rem', marginTop: '1rem', ...customStyles.controlButtons }}
           >
