@@ -224,6 +224,10 @@ const MyComponent: React.FC<JsonToTableProps> = (props) => {
 />
 ```
 
+## Author
+
+**Seyi K. Ogunbowale**
+
 ## License
 
 MIT
