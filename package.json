@@ -1,5 +1,5 @@
 {
-  "name": "json-tools-suite",
+  "name": "json-to-table",
   "version": "1.0.0",
   "description": "A comprehensive JSON utilities suite featuring JSON to Table converter and JSON to Form Fields generator",
   "private": false,
@@ -18,13 +18,13 @@
     "json-to-table",
     "json-to-form"
   ],
-  "homepage": "https://github.com/sciphergfx/json-tools-suite",
+  "homepage": "https://github.com/sciphergfx/json-to-table",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sciphergfx/json-tools-suite.git"
+    "url": "git+https://github.com/sciphergfx/json-to-table.git"
   },
   "bugs": {
-    "url": "https://github.com/sciphergfx/json-tools-suite/issues"
+    "url": "https://github.com/sciphergfx/json-to-table/issues"
   },
   "engines": {
     "node": ">=20.12.0",

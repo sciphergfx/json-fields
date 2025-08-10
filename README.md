@@ -78,15 +78,15 @@ npm run dev
 
 ```json
 [
-  {"id": 1, "name": "John", "active": true},
-  {"id": 2, "name": "Jane", "active": false}
+  { "id": 1, "name": "John", "active": true },
+  { "id": 2, "name": "Jane", "active": false }
 ]
 ```
 
 ### Single Object
 
 ```json
-{"id": 1, "name": "John", "email": "john@example.com"}
+{ "id": 1, "name": "John", "email": "john@example.com" }
 ```
 
 ## Development
@@ -188,8 +188,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 - 📧 Email: sheyie2008@gmail.com
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/json-tools-suite/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/json-tools-suite/discussions)
+- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/json-to-table/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/json-to-table/discussions)
 
 ## 🌟 Star History
 

@@ -36,20 +36,23 @@ npx vercel --prod
 ## First-Time Deployment Steps
 
 1. **Run the deployment command:**
+
    ```bash
    npx vercel
    ```
 
 2. **Follow the prompts:**
+
    ```
    ? Set up and deploy "~/apps/jsonToTable"? [Y/n] Y
    ? Which scope do you want to deploy to? Your-Username
    ? Link to existing project? [y/N] N
-   ? What's your project's name? json-tools-suite
+   ? What's your project's name? json-to-table
    ? In which directory is your code located? ./
    ```
 
 3. **Vercel will:**
+
    - Auto-detect framework (Vite)
    - Install dependencies
    - Run build command
@@ -63,7 +66,9 @@ npx vercel --prod
 ## Configuration Details
 
 ### vercel.json Configuration
+
 The project includes a `vercel.json` with:
+
 - ✅ Security headers (XSS, Frame Options, etc.)
 - ✅ Cache control for assets
 - ✅ Clean URLs
@@ -71,9 +76,11 @@ The project includes a `vercel.json` with:
 - ✅ Build configuration
 
 ### Environment Variables
+
 If you need environment variables:
 
 1. **Via Vercel Dashboard:**
+
    - Go to Project Settings → Environment Variables
    - Add your variables
    - Redeploy
@@ -84,6 +91,7 @@ If you need environment variables:
    ```
 
 ### Build Settings
+
 - **Framework Preset:** Vite
 - **Build Command:** `npm run build` or `npm run vercel-build`
 - **Output Directory:** `dist`
@@ -94,6 +102,7 @@ If you need environment variables:
 ### Add a custom domain:
 
 1. **Via Dashboard:**
+
    - Go to Project Settings → Domains
    - Add your domain
    - Follow DNS configuration
@@ -138,6 +147,7 @@ vercel rm [deployment-id]
 ## GitHub Integration
 
 ### Automatic Deployments:
+
 1. Connect GitHub repository in Vercel Dashboard
 2. Configure:
    - **Production Branch:** `main` or `master`
@@ -145,6 +155,7 @@ vercel rm [deployment-id]
    - **Auto-deploy:** Enabled
 
 ### Preview Deployments:
+
 - Every push to non-production branches creates a preview
 - Comment on PR with preview URL
 - Automatic HTTPS
@@ -152,6 +163,7 @@ vercel rm [deployment-id]
 ## Performance Features
 
 Vercel automatically provides:
+
 - ✅ Global CDN
 - ✅ Automatic HTTPS
 - ✅ HTTP/2 & HTTP/3
@@ -162,12 +174,14 @@ Vercel automatically provides:
 ## Monitoring
 
 ### Analytics:
+
 ```bash
 # Enable Web Vitals
 vercel analytics enable
 ```
 
 ### View in Dashboard:
+
 - Real User Metrics
 - Core Web Vitals
 - Performance scores
@@ -175,6 +189,7 @@ vercel analytics enable
 ## Troubleshooting
 
 ### Build Fails:
+
 ```bash
 # Check build logs
 vercel logs
@@ -187,10 +202,12 @@ npm run build
 ```
 
 ### 404 Errors on Routes:
+
 - `vercel.json` includes SPA rewrite rules
 - Check if file exists: `/index.html`
 
 ### Environment Variables Not Working:
+
 ```bash
 # List environment variables
 vercel env ls
@@ -202,11 +219,13 @@ vercel env pull
 ## Rollback
 
 ### Via Dashboard:
+
 1. Go to Deployments tab
 2. Find previous deployment
 3. Click "..." → "Promote to Production"
 
 ### Via CLI:
+
 ```bash
 # List deployments
 vercel ls
@@ -218,6 +237,7 @@ vercel rollback [deployment-url]
 ## Aliases
 
 ### Create custom aliases:
+
 ```bash
 # Add alias to deployment
 vercel alias [deployment-url] [alias]
@@ -232,6 +252,7 @@ vercel alias rm [alias]
 ## Team Deployment
 
 ### Deploy to team account:
+
 ```bash
 # Switch to team scope
 vercel switch [team-name]
@@ -250,6 +271,7 @@ vercel --scope [team-name]
 ## Costs
 
 ### Free Tier Includes:
+
 - 100GB bandwidth/month
 - Unlimited deployments
 - Automatic HTTPS
@@ -257,6 +279,7 @@ vercel --scope [team-name]
 - Preview deployments
 
 ### Monitor Usage:
+
 ```bash
 # Check usage
 vercel billing
@@ -265,6 +288,7 @@ vercel billing
 ## CI/CD Integration
 
 ### GitHub Actions:
+
 ```yaml
 name: Deploy to Vercel
 on:

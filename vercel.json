@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "json-tools-suite",
   "builds": [
     {
       "src": "package.json",
@@ -8,12 +7,6 @@
       "config": {
         "distDir": "dist"
       }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
     }
   ],
   "rewrites": [
