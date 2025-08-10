@@ -9,12 +9,13 @@ A comprehensive React application featuring two powerful JSON utilities: **JSON 
 ## 🚀 Features
 
 ### JSON to Table Converter
+
 - 📊 **Table Generation**: Convert JSON arrays or objects into formatted tables
 - 🎨 **Beautiful UI**: Modern, accessible interface with Chakra UI v3
 - ✨ **JSON Prettification**: Format JSON with proper indentation
 - 📝 **Sample Data**: Quick-start with example JSON
 - 🔍 **Error Handling**: Clear error messages for invalid JSON
-- 🎯 **Smart Formatting**: 
+- 🎯 **Smart Formatting**:
   - `null` and `undefined` values displayed clearly
   - Booleans shown as colored badges
   - Nested objects as JSON strings
@@ -23,8 +24,9 @@ A comprehensive React application featuring two powerful JSON utilities: **JSON 
 - 🔄 **Responsive Tables**: Horizontal scrolling for wide data
 
 ### JSON to Form Fields
+
 - 📝 **Dynamic Form Generation**: Convert JSON objects into interactive form fields
-- 🎯 **Automatic Type Detection**: 
+- 🎯 **Automatic Type Detection**:
   - Text, number, email, checkbox, date inputs
   - Array visualization as badges
 - 🏗️ **Nested Object Support**: Visual indentation for nested structures
@@ -43,21 +45,24 @@ A comprehensive React application featuring two powerful JSON utilities: **JSON 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 cd jsonToTable
 ```
 
-2. Install dependencies:
+1. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Start the development server:
+1. Start the development server:
+
 ```bash
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+1. Open your browser and navigate to `http://localhost:5173`
 
 ## Usage
 
@@ -70,6 +75,7 @@ npm run dev
 ## Supported JSON Formats
 
 ### Array of Objects (Recommended)
+
 ```json
 [
   {"id": 1, "name": "John", "active": true},
@@ -78,6 +84,7 @@ npm run dev
 ```
 
 ### Single Object
+
 ```json
 {"id": 1, "name": "John", "email": "john@example.com"}
 ```
@@ -147,6 +154,7 @@ jsonToTable/
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
 - Code of conduct
 - Development setup
 - Submitting pull requests
@@ -155,6 +163,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ## 📝 Changelog
 
 ### Version 1.0.0 (2024)
+
 - Initial release
 - JSON to Table converter
 - JSON to Form Fields generator
@@ -178,7 +187,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- 📧 Email: support@jsontools.example.com
+- 📧 Email: sheyie2008@gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/yourusername/json-tools-suite/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/json-tools-suite/discussions)
 
@@ -189,4 +198,3 @@ If you find this project useful, please consider giving it a star ⭐
 ---
 
 **Author:** Seyi K. Ogunbowale
-
