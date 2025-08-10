@@ -1,0 +1,66 @@
+# Source files (if publishing built version)
+# src/
+# Uncomment above if you only want to publish dist
+
+# Development files
+.env
+.env.*
+.eslintrc*
+.prettierrc*
+*.log
+*.map
+
+# Testing
+coverage/
+__tests__/
+*.test.js
+*.spec.js
+
+# Documentation (keep README.md)
+CONTRIBUTING.md
+DEPLOYMENT.md
+PRODUCTION_CHECKLIST.md
+
+# Version control
+.git/
+.gitignore
+.github/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build configs
+vercel.json
+.vercelignore
+netlify.toml
+Dockerfile
+docker-compose.yml
+
+# CI/CD
+.travis.yml
+.circleci/
+.gitlab-ci.yml
+
+# Examples and demos
+examples/
+demos/
+docs/
+
+# Development dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

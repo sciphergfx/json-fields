@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.test.js
+*.spec.js
+
+# Development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+CONTRIBUTING.md
+DEPLOYMENT.md
+PRODUCTION_CHECKLIST.md
+
+# Git
+.git/
+.gitignore
+
+# Build tools config (not needed in deployment)
+.eslintrc*
+.prettierrc*
+
+# Source files (Vercel builds from source)
+# Keep these for build process

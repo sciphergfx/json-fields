@@ -1,0 +1,74 @@
+{
+  "name": "json-tools-suite",
+  "version": "1.0.0",
+  "description": "A comprehensive JSON utilities suite featuring JSON to Table converter and JSON to Form Fields generator",
+  "private": false,
+  "author": {
+    "name": "Seyi K. Ogunbowale"
+  },
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "json",
+    "table",
+    "form",
+    "converter",
+    "react",
+    "chakra-ui",
+    "json-to-table",
+    "json-to-form"
+  ],
+  "homepage": "https://github.com/sciphergfx/json-tools-suite",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sciphergfx/json-tools-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sciphergfx/json-tools-suite/issues"
+  },
+  "engines": {
+    "node": ">=20.12.0",
+    "npm": ">=10.5.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist node_modules",
+    "validate": "npm run lint && npm run build",
+    "vercel-build": "npm run build",
+    "predeploy": "npm run build",
+    "deploy:vercel": "vercel --prod",
+    "prepublishOnly": "npm run validate"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^3.24.2",
+    "@emotion/react": "^11.14.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "vite": "^7.1.0"
+  }
+}
