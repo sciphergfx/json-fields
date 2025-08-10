@@ -16,6 +16,7 @@ import { flattenObject, unflattenObject, getInputType, parseJsonSafely, getDispl
  * @param {boolean} props.showControls - Whether to show save/cancel buttons
  * @param {boolean} props.showJsonInput - Whether to show JSON input textarea
  * @param {number} props.columns - Number of columns for form layout (default: 1)
+ * @param {Object} props.fieldConfig - Field configuration for custom input types
  */
 const JsonToFields = ({
   uiLibrary = 'chakra',
@@ -29,6 +30,7 @@ const JsonToFields = ({
   showControls = true,
   showJsonInput = true,
   columns = 1,
+  fieldConfig = {},
   ...props
 }) => {
   const [jsonInput, setJsonInput] = useState(initialJson);
@@ -102,74 +104,162 @@ const JsonToFields = ({
 
 
   const renderFormField = (key, value) => {
-    const inputType = getInputType(value);
+    const fieldTypeConfig = getInputType(value, key, fieldConfig);
     const displayName = getDisplayName(key);
 
-    if (inputType === 'checkbox') {
-      return (
-        <UI.Box 
-          key={key}
-          className={getUIClasses(uiLibrary, 'Box')}
-          style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
-        >
-          <UI.Label 
-            className={getUIClasses(uiLibrary, 'Label')}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', ...customStyles.label }}
-          >
-            <input
-              type="checkbox"
-              checked={formData[key] || false}
-              onChange={(e) => handleFieldChange(key, e.target.checked)}
-              className={getUIClasses(uiLibrary, 'Input', 'checkbox')}
-              style={customStyles.checkbox}
-            />
-            <UI.Text 
-              className={getUIClasses(uiLibrary, 'Text')}
-              style={{ fontWeight: '500', ...customStyles.fieldLabel }}
-            >
-              {displayName}
-            </UI.Text>
-          </UI.Label>
-        </UI.Box>
-      );
+    // Handle different field types based on configuration
+    switch (fieldTypeConfig.type) {
+      case 'checkbox':
+        return renderCheckboxField(key, value, displayName, fieldTypeConfig);
+      case 'select':
+        return renderSelectField(key, value, displayName, fieldTypeConfig);
+      case 'multi-select':
+        return renderMultiSelectField(key, value, displayName, fieldTypeConfig);
+      case 'textarea':
+        return renderTextareaField(key, value, displayName, fieldTypeConfig);
+      case 'email':
+      case 'url':
+      case 'date':
+      case 'password':
+        return renderSpecialInputField(key, value, displayName, fieldTypeConfig);
+      case 'number':
+        return renderNumberField(key, value, displayName, fieldTypeConfig);
+      case 'array':
+        return renderArrayField(key, value, displayName, fieldTypeConfig);
+      case 'object':
+        return renderObjectField(key, value, displayName, fieldTypeConfig);
+      default:
+        return renderTextInputField(key, value, displayName, fieldTypeConfig);
     }
+  };
 
-    if (inputType === 'array' || inputType === 'object') {
-      return (
-        <UI.Box 
-          key={key}
-          className={getUIClasses(uiLibrary, 'Box')}
-          style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+  // Checkbox field renderer
+  const renderCheckboxField = (key, value, displayName, fieldTypeConfig) => {
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', ...customStyles.label }}
         >
-          <UI.Label 
-            className={getUIClasses(uiLibrary, 'Label')}
-            style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+          <input
+            type="checkbox"
+            checked={formData[key] || false}
+            onChange={(e) => handleFieldChange(key, e.target.checked)}
+            className={getUIClasses(uiLibrary, 'Input', 'checkbox')}
+            style={customStyles.checkbox}
+          />
+          <UI.Text 
+            className={getUIClasses(uiLibrary, 'Text')}
+            style={{ fontWeight: '500', ...customStyles.fieldLabel }}
           >
             {displayName}
-          </UI.Label>
-          <UI.Textarea
-            value={JSON.stringify(value, null, 2)}
-            onChange={(e) => {
-              try {
-                const parsed = JSON.parse(e.target.value);
-                handleFieldChange(key, parsed);
-              } catch {
-                // Keep the raw string value for now
-                handleFieldChange(key, e.target.value);
-              }
-            }}
-            className={getUIClasses(uiLibrary, 'Textarea')}
-            style={{ 
-              fontFamily: 'monospace', 
-              minHeight: '100px',
-              width: '100%',
-              ...customStyles.textarea 
-            }}
-          />
-        </UI.Box>
-      );
-    }
+          </UI.Text>
+        </UI.Label>
+      </UI.Box>
+    );
+  };
 
+  // Select field renderer
+  const renderSelectField = (key, value, displayName, fieldTypeConfig) => {
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Label>
+        <UI.Select
+          value={formData[key] || ''}
+          onChange={(e) => handleFieldChange(key, e.target.value)}
+          className={getUIClasses(uiLibrary, 'Select')}
+          style={{ width: '100%', ...customStyles.select }}
+        >
+          <option value="">Select {displayName}</option>
+          {fieldTypeConfig.options?.map(option => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </UI.Select>
+      </UI.Box>
+    );
+  };
+
+  // Multi-select field renderer
+  const renderMultiSelectField = (key, value, displayName, fieldTypeConfig) => {
+    const selectedValues = Array.isArray(formData[key]) ? formData[key] : [];
+    
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Label>
+        <UI.Box style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {fieldTypeConfig.options?.map(option => (
+            <UI.Label key={option} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={selectedValues.includes(option)}
+                onChange={(e) => {
+                  const newValues = e.target.checked 
+                    ? [...selectedValues, option]
+                    : selectedValues.filter(v => v !== option);
+                  handleFieldChange(key, newValues);
+                }}
+                style={customStyles.checkbox}
+              />
+              <UI.Text style={{ fontSize: '14px', ...customStyles.text }}>{option}</UI.Text>
+            </UI.Label>
+          ))}
+        </UI.Box>
+      </UI.Box>
+    );
+  };
+
+  // Textarea field renderer
+  const renderTextareaField = (key, value, displayName, fieldTypeConfig) => {
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Label>
+        <UI.Textarea
+          value={formData[key] || ''}
+          onChange={(e) => handleFieldChange(key, e.target.value)}
+          className={getUIClasses(uiLibrary, 'Textarea')}
+          style={{ 
+            width: '100%',
+            minHeight: `${(fieldTypeConfig.rows || 4) * 1.5}rem`,
+            ...customStyles.textarea 
+          }}
+        />
+      </UI.Box>
+    );
+  };
+
+  // Special input field renderer (email, url, date, password)
+  const renderSpecialInputField = (key, value, displayName, fieldTypeConfig) => {
     return (
       <UI.Box 
         key={key}
@@ -183,12 +273,136 @@ const JsonToFields = ({
           {displayName}
         </UI.Label>
         <UI.Input
-          type={inputType}
+          type={fieldTypeConfig.type}
+          value={formData[key] || ''}
+          onChange={(e) => handleFieldChange(key, e.target.value)}
+          className={getUIClasses(uiLibrary, 'Input')}
+          style={{ width: '100%', ...customStyles.input }}
+        />
+      </UI.Box>
+    );
+  };
+
+  // Number field renderer
+  const renderNumberField = (key, value, displayName, fieldTypeConfig) => {
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Label>
+        <UI.Input
+          type="number"
           value={formData[key] || ''}
           onChange={(e) => {
-            const val = inputType === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;
+            const val = parseFloat(e.target.value) || 0;
             handleFieldChange(key, val);
           }}
+          className={getUIClasses(uiLibrary, 'Input')}
+          style={{ width: '100%', ...customStyles.input }}
+        />
+      </UI.Box>
+    );
+  };
+
+  // Array field renderer
+  const renderArrayField = (key, value, displayName, fieldTypeConfig) => {
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName} (Array)
+        </UI.Label>
+        <UI.Textarea
+          value={JSON.stringify(value, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              handleFieldChange(key, parsed);
+            } catch {
+              // Keep the raw string value for now
+              handleFieldChange(key, e.target.value);
+            }
+          }}
+          className={getUIClasses(uiLibrary, 'Textarea')}
+          style={{ 
+            fontFamily: 'monospace', 
+            minHeight: '100px',
+            width: '100%',
+            ...customStyles.textarea 
+          }}
+        />
+      </UI.Box>
+    );
+  };
+
+  // Object field renderer
+  const renderObjectField = (key, value, displayName, fieldTypeConfig) => {
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName} (Object)
+        </UI.Label>
+        <UI.Textarea
+          value={JSON.stringify(value, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              handleFieldChange(key, parsed);
+            } catch {
+              // Keep the raw string value for now
+              handleFieldChange(key, e.target.value);
+            }
+          }}
+          className={getUIClasses(uiLibrary, 'Textarea')}
+          style={{ 
+            fontFamily: 'monospace', 
+            minHeight: '100px',
+            width: '100%',
+            ...customStyles.textarea 
+          }}
+        />
+      </UI.Box>
+    );
+  };
+
+  // Text input field renderer (default)
+  const renderTextInputField = (key, value, displayName, fieldTypeConfig) => {
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Label>
+        <UI.Input
+          type="text"
+          value={formData[key] || ''}
+          onChange={(e) => handleFieldChange(key, e.target.value)}
           className={getUIClasses(uiLibrary, 'Input')}
           style={{ width: '100%', ...customStyles.input }}
         />

@@ -22,30 +22,50 @@ function App() {
 
   // Sample JSON data for table demo
   const sampleTableJson = JSON.stringify([
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Developer", salary: 75000, active: true },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Designer", salary: 68000, active: true },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "Manager", salary: 85000, active: false },
-    { id: 4, name: "Alice Brown", email: "alice@example.com", role: "Developer", salary: 72000, active: true },
+    { id: 1, name: "John Doe", email: "john@example.com", role: "Developer", salary: 175000, active: true },
+    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Designer", salary: 168000, active: true },
+    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "Manager", salary: 185000, active: false },
+    { id: 4, name: "Alice Brown", email: "alice@example.com", role: "Developer", salary: 172000, active: true },
   ], null, 2);
 
   // Sample JSON data for form demo
   const sampleFormJson = JSON.stringify({
-    user: {
-      name: "John Doe",
-      email: "john@example.com",
-      age: 30,
-      isActive: true,
-      preferences: {
-        theme: "dark",
-        notifications: true
-      }
+    name: "Seyi Ogunbowale",
+    email: "seyi@example.com",
+    age: 30,
+    isActive: true,
+    role: "developer",
+    skills: ["React", "JavaScript", "Node.js"],
+    bio: "Full-stack developer with 5+ years of experience",
+    website: "https://github.com/sciphergfx",
+    joinDate: "2023-01-15",
+    password: "secret123",
+    preferences: {
+      theme: "dark",
+      notifications: true
     },
-    settings: {
-      language: "en",
-      timezone: "UTC",
-      autoSave: false
-    }
+    tags: ["developer", "react", "javascript"]
   }, null, 2);
+
+  // Sample field configuration to demonstrate flexible field types
+  const sampleFieldConfig = {
+    email: { type: 'email' },
+    website: { type: 'url' },
+    joinDate: { type: 'date' },
+    password: { type: 'password' },
+    role: { 
+      type: 'select', 
+      options: ['developer', 'designer', 'manager', 'analyst', 'intern'] 
+    },
+    skills: { 
+      type: 'multi-select', 
+      options: ['React', 'Vue', 'Angular', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 'Java', 'C++'] 
+    },
+    bio: { 
+      type: 'textarea', 
+      rows: 3 
+    }
+  };
 
   const loadSampleTable = () => {
     setTableJsonInput(sampleTableJson);
@@ -139,6 +159,7 @@ function App() {
       color: '#a3a3a3',
       fontWeight: '500',
       fontSize: '12px',
+      textAlign: 'left',
       textTransform: 'uppercase',
       letterSpacing: '0.05em',
       padding: '12px 16px',
@@ -274,16 +295,42 @@ function App() {
         boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)',
       }
     },
+    select: {
+      background: '#1a1a1a',
+      border: '1px solid #404040',
+      borderRadius: '6px',
+      color: '#ffffff',
+      fontSize: '14px',
+      padding: '12px 40px 12px 12px', // Extra right padding for dropdown arrow
+      width: '100%',
+      transition: 'border-color 0.2s ease',
+      appearance: 'none', // Remove default styling
+      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a3a3a3' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+      backgroundPosition: 'right 12px center',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: '16px',
+      _focus: {
+        borderColor: '#10b981',
+        outline: 'none',
+        boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)',
+      }
+    },
     checkbox: {
       width: '16px',
       height: '16px',
       accentColor: '#10b981',
+      marginRight: '8px',
+      flexShrink: 0, // Prevent checkbox from shrinking
     },
     label: {
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
+      color: '#ffffff',
+      fontSize: '14px',
+    },
+    text: {
       color: '#ffffff',
       fontSize: '14px',
     },
@@ -489,6 +536,20 @@ function App() {
               </Tabs.Content>
 
               <Tabs.Content value="fields" p={6}>
+                {/* Field Configuration Demo Info */}
+                <Box mb={6} p={4} bg="#1e3a8a" borderRadius="6px" border="1px solid #3b82f6">
+                  <Text fontSize="16px" fontWeight="600" color="#ffffff" mb={2}>
+                    🎯 Flexible Field Configuration Demo
+                  </Text>
+                  <Text fontSize="14px" color="#bfdbfe" mb={3}>
+                    This demo showcases intelligent field type detection and custom field configuration. 
+                    The form automatically renders appropriate input types based on your JSON data and field configuration.
+                  </Text>
+                  <Text fontSize="12px" color="#93c5fd">
+                    <strong>Featured field types:</strong> Email, URL, Date, Password, Select dropdown, Multi-select checkboxes, Textarea, and more!
+                  </Text>
+                </Box>
+
                 {/* Demo Controls */}
                 <Box mb={6} p={4} bg="#262626" borderRadius="6px" border="1px solid #404040">
                   <Text fontSize="16px" fontWeight="600" color="#ffffff" mb={3}>
@@ -537,6 +598,7 @@ function App() {
                   customStyles={customFormStyles}
                   columns={2}
                   initialJson={formJsonInput}
+                  fieldConfig={sampleFieldConfig}
                   onSave={(nestedData, flatData) => {
                     console.log('Form data saved:', nestedData);
                   }}

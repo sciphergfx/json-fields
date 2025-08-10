@@ -140,7 +140,7 @@ const JsonToTable = ({
                 <UI.Th 
                   key={column}
                   className={getUIClasses(uiLibrary, 'Th')}
-                  style={customStyles.th}
+                  style={{ textAlign: 'center', ...customStyles.th }}
                 >
                   {getDisplayName(column)}
                 </UI.Th>

@@ -98,6 +98,45 @@ const MyForm = () => {
 };
 ```
 
+### Multi-Column Form Layout
+
+The `JsonToFields` component supports multi-column layouts using the `columns` prop:
+
+```jsx
+import { JsonToFields } from '@sciphergfx/json-to-table';
+
+const MultiColumnForm = () => {
+  return (
+    <JsonToFields
+      uiLibrary="chakra"
+      columns={3} // Creates a 3-column form layout
+      onSave={(nestedData, flatData) => {
+        console.log('Form data:', nestedData);
+      }}
+      initialJson={JSON.stringify({
+        firstName: "John",
+        lastName: "Doe", 
+        email: "john@example.com",
+        phone: "+1234567890",
+        address: "123 Main St",
+        city: "New York",
+        state: "NY",
+        zipCode: "10001",
+        country: "USA"
+      })}
+    />
+  );
+};
+```
+
+**Column Layout Examples:**
+- `columns={1}` - Single column (default)
+- `columns={2}` - Two-column layout
+- `columns={3}` - Three-column layout
+- `columns={4}` - Four-column layout
+
+The fields are automatically distributed evenly across the specified number of columns.
+
 ## API Reference
 
 ### JsonToTable Props
@@ -128,6 +167,7 @@ const MyForm = () => {
 | `customStyles` | `object` | `{}` | Custom styles object |
 | `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
 | `showJsonInput` | `boolean` | `true` | Whether to show JSON input textarea |
+| `columns` | `number` | `1` | Number of columns for form layout |
 
 ## Styling
 
