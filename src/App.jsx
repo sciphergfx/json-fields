@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Container, Tabs, Text } from "@chakra-ui/react";
 import JsonToTable from "./components/JsonToTable";
-import JsonToFields from "./components/JsonToFields";
-import ErrorBoundary from "./components/ErrorBoundary";
+import JsonToFields from "./components/JsonToFields"; 
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from "./utils/storage";
 
 function App() {
