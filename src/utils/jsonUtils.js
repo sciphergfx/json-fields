@@ -9,22 +9,22 @@
  * @returns {Object} Flattened object
  */
 export const flattenObject = (obj, prefix = '') => {
-  let flattened = {};
-  
+  let flattened = {}
+
   for (let key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const newKey = prefix ? `${prefix}.${key}` : key;
-      
+      const newKey = prefix ? `${prefix}.${key}` : key
+
       if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-        Object.assign(flattened, flattenObject(obj[key], newKey));
+        Object.assign(flattened, flattenObject(obj[key], newKey))
       } else {
-        flattened[newKey] = obj[key];
+        flattened[newKey] = obj[key]
       }
     }
   }
-  
-  return flattened;
-};
+
+  return flattened
+}
 
 /**
  * Convert flattened object back to nested structure
@@ -32,24 +32,24 @@ export const flattenObject = (obj, prefix = '') => {
  * @returns {Object} Nested object
  */
 export const unflattenObject = (flat) => {
-  const result = {};
-  
+  const result = {}
+
   for (let key in flat) {
-    const keys = key.split('.');
-    let current = result;
-    
+    const keys = key.split('.')
+    let current = result
+
     for (let i = 0; i < keys.length - 1; i++) {
       if (!current[keys[i]]) {
-        current[keys[i]] = {};
+        current[keys[i]] = {}
       }
-      current = current[keys[i]];
+      current = current[keys[i]]
     }
-    
-    current[keys[keys.length - 1]] = flat[key];
+
+    current[keys[keys.length - 1]] = flat[key]
   }
-  
-  return result;
-};
+
+  return result
+}
 
 /**
  * Determine input type based on value
@@ -57,14 +57,14 @@ export const unflattenObject = (flat) => {
  * @returns {string} Input type
  */
 export const getInputType = (value) => {
-  if (typeof value === 'boolean') return 'checkbox';
-  if (typeof value === 'number') return 'number';
-  if (typeof value === 'string' && value.includes('@')) return 'email';
-  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return 'date';
-  if (Array.isArray(value)) return 'array';
-  if (typeof value === 'object' && value !== null) return 'object';
-  return 'text';
-};
+  if (typeof value === 'boolean') return 'checkbox'
+  if (typeof value === 'number') return 'number'
+  if (typeof value === 'string' && value.includes('@')) return 'email'
+  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return 'date'
+  if (Array.isArray(value)) return 'array'
+  if (typeof value === 'object' && value !== null) return 'object'
+  return 'text'
+}
 
 /**
  * Parse JSON string safely
@@ -73,12 +73,12 @@ export const getInputType = (value) => {
  */
 export const parseJsonSafely = (jsonString) => {
   try {
-    const parsed = JSON.parse(jsonString);
-    return { success: true, data: parsed };
+    const parsed = JSON.parse(jsonString)
+    return { success: true, data: parsed }
   } catch (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: error.message }
   }
-};
+}
 
 /**
  * Format JSON string with proper indentation
@@ -87,8 +87,8 @@ export const parseJsonSafely = (jsonString) => {
  * @returns {string} Formatted JSON string
  */
 export const formatJson = (obj, spaces = 2) => {
-  return JSON.stringify(obj, null, spaces);
-};
+  return JSON.stringify(obj, null, spaces)
+}
 
 /**
  * Get nested level from key
@@ -96,8 +96,8 @@ export const formatJson = (obj, spaces = 2) => {
  * @returns {number} Nesting level
  */
 export const getNestedLevel = (key) => {
-  return key.split('.').length - 1;
-};
+  return key.split('.').length - 1
+}
 
 /**
  * Get display name from key
@@ -105,5 +105,5 @@ export const getNestedLevel = (key) => {
  * @returns {string} Display name
  */
 export const getDisplayName = (key) => {
-  return key.split('.').pop();
-};
+  return key.split('.').pop()
+}

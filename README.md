@@ -1,14 +1,14 @@
 ### List Component
 
 ```jsx
-import { List } from '@sciphergfx/json-to-table';
+import { List } from '@sciphergfx/json-to-table'
 
 const items = [
   { label: 'Main', children: [{ label: 'Sample' }, { label: 'Flow 2' }] },
   { label: 'Workflow Type', children: [] },
   { label: 'Sample', children: [{ label: 'Sample' }, { label: 'Flow 2' }] },
   { label: 'Flow 2' },
-];
+]
 
 export const MyList = () => (
   <List
@@ -22,8 +22,20 @@ export const MyList = () => (
     hoverIcon={<span>⋯</span>}
     // Option A: Sections with filters
     sections={[
-      { id: 'parents', title: 'Parent Nodes', filter: (i) => Array.isArray(i.children) && i.children.length > 0, collapsible: true, defaultOpen: true },
-      { id: 'leaves', title: 'Leaf Nodes', filter: (i) => !i.children || i.children.length === 0, collapsible: true, defaultOpen: true },
+      {
+        id: 'parents',
+        title: 'Parent Nodes',
+        filter: (i) => Array.isArray(i.children) && i.children.length > 0,
+        collapsible: true,
+        defaultOpen: true,
+      },
+      {
+        id: 'leaves',
+        title: 'Leaf Nodes',
+        filter: (i) => !i.children || i.children.length === 0,
+        collapsible: true,
+        defaultOpen: true,
+      },
     ]}
     // Option B: Group by function (alternative to sections)
     // groupBy={(i) => i.label?.[0]?.toUpperCase() || 'Other'}
@@ -31,8 +43,9 @@ export const MyList = () => (
     onItemClick={(item) => console.log('Clicked:', item)}
     onToggle={(item, isOpen) => console.log('Toggled', item.label, '->', isOpen)}
   />
-);
+)
 ```
+
 # @sciphergfx/json-to-table
 
 UI-agnostic React components for JSON → Table, JSON → Form Fields, and JSON → List, with support for Chakra UI, Tailwind CSS, and shadcn/ui.
@@ -76,6 +89,7 @@ npm install react react-dom
 ### Optional UI Library Dependencies
 
 For Chakra UI support:
+
 ```bash
 npm install @chakra-ui/react @emotion/react
 ```
@@ -85,16 +99,16 @@ npm install @chakra-ui/react @emotion/react
 ### Table Component
 
 ```jsx
-import { Table } from '@sciphergfx/json-to-table';
+import { Table } from '@sciphergfx/json-to-table'
 
 const MyApp = () => {
   const handleSave = (nestedData, flatData) => {
-    console.log('Saved data:', nestedData);
-  };
+    console.log('Saved data:', nestedData)
+  }
 
   const handleFieldChange = (key, value, fullData) => {
-    console.log(`Field ${key} changed to:`, value);
-  };
+    console.log(`Field ${key} changed to:`, value)
+  }
 
   return (
     <Table
@@ -105,111 +119,136 @@ const MyApp = () => {
       saveButtonText="Save Changes"
       cancelButtonText="Reset Form"
       initialJson={JSON.stringify([
-        { id: 1, name: "John", email: "john@example.com" },
-        { id: 2, name: "Jane", email: "jane@example.com" }
+        { id: 1, name: 'John', email: 'john@example.com' },
+        { id: 2, name: 'Jane', email: 'jane@example.com' },
       ])}
     />
-  );
-};
+  )
+}
 ```
 
 ### Fields Component
 
 ```jsx
-import { Fields } from '@sciphergfx/json-to-table';
+import { Fields } from '@sciphergfx/json-to-table'
 
 const MyForm = () => {
   const handleSave = (nestedData, flatData) => {
-    console.log('Form data:', nestedData);
-  };
+    console.log('Form data:', nestedData)
+  }
 
   return (
     <Fields
       uiLibrary="shadcn"
       // Group fields into collapsible sections (optional)
       sections={[
-        { id: 'profile', title: 'Profile', description: 'Basic info', fields: ['name','email','website','role','joinDate'], collapsible: true, defaultOpen: true },
-        { id: 'preferences', title: 'Preferences', fields: ['preferences.theme','preferences.notifications','isActive'], collapsible: true, defaultOpen: true },
-        { id: 'security', title: 'Security', fields: ['password'], collapsible: true, defaultOpen: false },
-        { id: 'about', title: 'About', fields: ['bio','skills','tags'], collapsible: true, defaultOpen: true },
+        {
+          id: 'profile',
+          title: 'Profile',
+          description: 'Basic info',
+          fields: ['name', 'email', 'website', 'role', 'joinDate'],
+          collapsible: true,
+          defaultOpen: true,
+        },
+        {
+          id: 'preferences',
+          title: 'Preferences',
+          fields: ['preferences.theme', 'preferences.notifications', 'isActive'],
+          collapsible: true,
+          defaultOpen: true,
+        },
+        {
+          id: 'security',
+          title: 'Security',
+          fields: ['password'],
+          collapsible: true,
+          defaultOpen: false,
+        },
+        {
+          id: 'about',
+          title: 'About',
+          fields: ['bio', 'skills', 'tags'],
+          collapsible: true,
+          defaultOpen: true,
+        },
       ]}
       includeUnsectioned
       onSave={handleSave}
       onCancel={() => console.log('Form cancelled')}
       onFieldChange={(key, value, fullData) => {
-        console.log(`Field ${key} changed:`, value);
+        console.log(`Field ${key} changed:`, value)
       }}
       initialJson={JSON.stringify({
         user: {
-          name: "John Doe",
-          email: "john@example.com",
+          name: 'John Doe',
+          email: 'john@example.com',
           preferences: {
-            theme: "dark",
-            notifications: true
-          }
+            theme: 'dark',
+            notifications: true,
+          },
         },
-        skills: ["React", "TypeScript"],
-        tags: ["dev","ui"], // Arrays of strings render as pill chips with add/delete
+        skills: ['React', 'TypeScript'],
+        tags: ['dev', 'ui'], // Arrays of strings render as pill chips with add/delete
       })}
       showJsonInput={false} // Hide JSON input, show only form
     />
-  );
-};
+  )
+}
 ```
 
 ## API Reference
 
 ### Table Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use for styling |
-| `onSave` | `(nestedData, flatData) => void` | - | Callback when save button is clicked |
-| `onCancel` | `() => void` | - | Callback when cancel button is clicked |
-| `onFieldChange` | `(key, value, fullData) => void` | - | Callback when any field changes |
-| `saveButtonText` | `string` | `'Save Changes'` | Text for the save button |
-| `cancelButtonText` | `string` | `'Reset Form'` | Text for the cancel button |
-| `initialJson` | `string` | `''` | Initial JSON string to load |
-| `customStyles` | `object` | `{}` | Custom styles object |
-| `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
+| Prop               | Type                                 | Default          | Description                            |
+| ------------------ | ------------------------------------ | ---------------- | -------------------------------------- |
+| `uiLibrary`        | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'`       | UI library to use for styling          |
+| `onSave`           | `(nestedData, flatData) => void`     | -                | Callback when save button is clicked   |
+| `onCancel`         | `() => void`                         | -                | Callback when cancel button is clicked |
+| `onFieldChange`    | `(key, value, fullData) => void`     | -                | Callback when any field changes        |
+| `saveButtonText`   | `string`                             | `'Save Changes'` | Text for the save button               |
+| `cancelButtonText` | `string`                             | `'Reset Form'`   | Text for the cancel button             |
+| `initialJson`      | `string`                             | `''`             | Initial JSON string to load            |
+| `customStyles`     | `object`                             | `{}`             | Custom styles object                   |
+| `showControls`     | `boolean`                            | `true`           | Whether to show save/cancel buttons    |
 
 ### Fields Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use for styling |
-| `onSave` | `(nestedData, flatData) => void` | - | Callback when save button is clicked |
-| `onCancel` | `() => void` | - | Callback when cancel button is clicked |
-| `onFieldChange` | `(key, value, fullData) => void` | - | Callback when any field changes |
-| `saveButtonText` | `string` | `'Save Changes'` | Text for the save button |
-| `cancelButtonText` | `string` | `'Reset Form'` | Text for the cancel button |
-| `initialJson` | `string` | `''` | Initial JSON string to load |
-| `customStyles` | `object` | `{}` | Custom styles object |
-| `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
-| `showJsonInput` | `boolean` | `true` | Whether to show JSON input textarea |
-| `sections` | `Array<{ id?, title, description?, fields: string[], collapsible?, defaultOpen? }>` | `null` | Group fields into sections |
-| `includeUnsectioned` | `boolean` | `false` | Show fields not in sections under an "Other" section |
-| `unsectionedTitle` | `string` | `'Other'` | Title for unsectioned fields section |
+| Prop                 | Type                                                                                | Default          | Description                                          |
+| -------------------- | ----------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------- |
+| `uiLibrary`          | `'chakra' \| 'tailwind' \| 'shadcn'`                                                | `'chakra'`       | UI library to use for styling                        |
+| `onSave`             | `(nestedData, flatData) => void`                                                    | -                | Callback when save button is clicked                 |
+| `onCancel`           | `() => void`                                                                        | -                | Callback when cancel button is clicked               |
+| `onFieldChange`      | `(key, value, fullData) => void`                                                    | -                | Callback when any field changes                      |
+| `saveButtonText`     | `string`                                                                            | `'Save Changes'` | Text for the save button                             |
+| `cancelButtonText`   | `string`                                                                            | `'Reset Form'`   | Text for the cancel button                           |
+| `initialJson`        | `string`                                                                            | `''`             | Initial JSON string to load                          |
+| `customStyles`       | `object`                                                                            | `{}`             | Custom styles object                                 |
+| `showControls`       | `boolean`                                                                           | `true`           | Whether to show save/cancel buttons                  |
+| `showJsonInput`      | `boolean`                                                                           | `true`           | Whether to show JSON input textarea                  |
+| `sections`           | `Array<{ id?, title, description?, fields: string[], collapsible?, defaultOpen? }>` | `null`           | Group fields into sections                           |
+| `includeUnsectioned` | `boolean`                                                                           | `false`          | Show fields not in sections under an "Other" section |
+| `unsectionedTitle`   | `string`                                                                            | `'Other'`        | Title for unsectioned fields section                 |
 
 ### List Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use |
-| `mode` | `'light' \| 'dark'` | `'dark'` | Per-component color mode |
-| `startIcon` | `ReactNode` | `null` | Icon near header title |
-| `headerTitle` | `ReactNode` | `'Projects'` | Header title |
-| `headerDescription` | `ReactNode` | `null` | Header description text |
-| `parentOpenIcon` | `ReactNode` | `▼` | Icon for open parent rows |
-| `parentClosedIcon` | `ReactNode` | `▶` | Icon for closed parent rows |
-| `parentIcon` | `ReactNode` | `📁` | Item icon for parent rows (legacy) |
-| `childIcon` | `ReactNode` | `🗂️` | Item icon for child rows |
-| `hoverIcon` | `ReactNode` | `…` | Hover action icon at row end |
-| `sections` | `Array<{ id?, title, description?, collapsible?, defaultOpen?, filter?: (item) => boolean }>` | `null` | Explicit sections with filters |
-| `groupBy` | `(item) => string` | `null` | Auto sections by group key |
-| `sectionOrder` | `string[]` | `null` | Ordering for groupBy sections |
-| `onItemClick` | `(item) => void` | `() => {}` | Click handler |
-| `onToggle` | `(item, isOpen) => void` | `() => {}` | Parent toggle handler |
+| Prop                | Type                                                                                          | Default      | Description                        |
+| ------------------- | --------------------------------------------------------------------------------------------- | ------------ | ---------------------------------- |
+| `uiLibrary`         | `'chakra' \| 'tailwind' \| 'shadcn'`                                                          | `'chakra'`   | UI library to use                  |
+| `mode`              | `'light' \| 'dark'`                                                                           | `'dark'`     | Per-component color mode           |
+| `startIcon`         | `ReactNode`                                                                                   | `null`       | Icon near header title             |
+| `headerTitle`       | `ReactNode`                                                                                   | `'Projects'` | Header title                       |
+| `headerDescription` | `ReactNode`                                                                                   | `null`       | Header description text            |
+| `parentOpenIcon`    | `ReactNode`                                                                                   | `▼`          | Icon for open parent rows          |
+| `parentClosedIcon`  | `ReactNode`                                                                                   | `▶`         | Icon for closed parent rows        |
+| `parentIcon`        | `ReactNode`                                                                                   | `📁`         | Item icon for parent rows (legacy) |
+| `childIcon`         | `ReactNode`                                                                                   | `🗂️`         | Item icon for child rows           |
+| `hoverIcon`         | `ReactNode`                                                                                   | `…`          | Hover action icon at row end       |
+| `sections`          | `Array<{ id?, title, description?, collapsible?, defaultOpen?, filter?: (item) => boolean }>` | `null`       | Explicit sections with filters     |
+| `groupBy`           | `(item) => string`                                                                            | `null`       | Auto sections by group key         |
+| `sectionOrder`      | `string[]`                                                                                    | `null`       | Ordering for groupBy sections      |
+| `onItemClick`       | `(item) => void`                                                                              | `() => {}`   | Click handler                      |
+| `onToggle`          | `(item, isOpen) => void`                                                                      | `() => {}`   | Parent toggle handler              |
 
 ## Styling
 
@@ -234,7 +273,7 @@ You can override styles using the `customStyles` prop:
   customStyles={{
     container: { maxWidth: '800px' },
     table: { fontSize: '14px' },
-    button: { backgroundColor: '#007bff' }
+    button: { backgroundColor: '#007bff' },
   }}
 />
 ```
@@ -244,23 +283,23 @@ You can override styles using the `customStyles` prop:
 The package also exports utility functions for working with JSON:
 
 ```jsx
-import { 
-  flattenObject, 
-  unflattenObject, 
+import {
+  flattenObject,
+  unflattenObject,
   parseJsonSafely,
-  getInputType 
-} from '@sciphergfx/json-to-table';
+  getInputType,
+} from '@sciphergfx/json-to-table'
 
 // Flatten nested objects
-const flat = flattenObject({ user: { name: 'John' } });
+const flat = flattenObject({ user: { name: 'John' } })
 // Result: { 'user.name': 'John' }
 
 // Unflatten back to nested
-const nested = unflattenObject({ 'user.name': 'John' });
+const nested = unflattenObject({ 'user.name': 'John' })
 // Result: { user: { name: 'John' } }
 
 // Safe JSON parsing
-const result = parseJsonSafely('{"name": "John"}');
+const result = parseJsonSafely('{"name": "John"}')
 // Result: { success: true, data: { name: 'John' } }
 ```
 
@@ -269,11 +308,11 @@ const result = parseJsonSafely('{"name": "John"}');
 The package includes full TypeScript definitions:
 
 ```typescript
-import { TableProps, FieldsProps } from '@sciphergfx/json-to-table';
+import { TableProps, FieldsProps } from '@sciphergfx/json-to-table'
 
 const MyComponent: React.FC<TableProps> = (props) => {
   // Your component logic
-};
+}
 ```
 
 ## Examples
@@ -287,7 +326,7 @@ const MyComponent: React.FC<TableProps> = (props) => {
     container: { padding: '2rem' },
     formCard: { border: '2px solid #e2e8f0' },
     input: { borderRadius: '8px' },
-    button: { backgroundColor: '#3b82f6' }
+    button: { backgroundColor: '#3b82f6' },
   }}
   onSave={(data) => console.log('Saved:', data)}
 />
@@ -301,7 +340,7 @@ const MyComponent: React.FC<TableProps> = (props) => {
   showControls={false}
   onFieldChange={(key, value, data) => {
     // Handle changes in your own way
-    updateMyState(data);
+    updateMyState(data)
   }}
 />
 ```

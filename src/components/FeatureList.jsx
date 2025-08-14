@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Card, Heading, List, Text, Icon } from '@chakra-ui/react';
+import React from 'react'
+import { Box, Card, Heading, List, Text, Icon } from '@chakra-ui/react'
 
 /**
  * FeatureList Component
@@ -47,7 +47,7 @@ const FeatureList = () => {
       description: 'Clear error messages for invalid JSON input',
       icon: '🛡️',
     },
-  ];
+  ]
 
   return (
     <Card.Root bg="blue.50" _dark={{ bg: 'blue.900' }}>
@@ -76,7 +76,7 @@ const FeatureList = () => {
         </List.Root>
       </Card.Body>
     </Card.Root>
-  );
-};
+  )
+}
 
-export default FeatureList;
+export default FeatureList

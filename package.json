@@ -45,6 +45,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
     "clean": "rm -rf dist node_modules",
     "validate": "npm run lint && npm run build",
     "vercel-build": "npm run build",
@@ -83,14 +85,19 @@
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^9.32.0",
+    "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "prettier": "^3.6.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rollup": "^4.46.2",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "util-inspect": "^0.1.8",
     "vite": "^7.1.0"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0"
   }
 }

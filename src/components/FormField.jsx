@@ -1,39 +1,31 @@
-import React from 'react';
-import {
-  Box,
-  Checkbox,
-  Input,
-  Text,
-  Badge,
-  HStack,
-  VStack,
-} from '@chakra-ui/react';
-import { getInputType, getNestedLevel, getDisplayName } from '../utils/jsonUtils';
+import React from 'react'
+import { Box, Checkbox, Input, Text, Badge, HStack, VStack } from '@chakra-ui/react'
+import { getInputType, getNestedLevel, getDisplayName } from '../utils/jsonUtils'
 
 /**
  * FormField Component
  * Renders a single form field based on the data type
  */
 const FormField = ({ fieldKey, value, onChange }) => {
-  const inputType = getInputType(value);
-  const nestedLevel = getNestedLevel(fieldKey);
-  const displayName = getDisplayName(fieldKey);
-  
+  const inputType = getInputType(value)
+  const nestedLevel = getNestedLevel(fieldKey)
+  const displayName = getDisplayName(fieldKey)
+
   // Handle different value types
   const handleChange = (newValue) => {
     if (inputType === 'number') {
-      onChange(fieldKey, Number(newValue) || 0);
+      onChange(fieldKey, Number(newValue) || 0)
     } else if (inputType === 'checkbox') {
-      onChange(fieldKey, newValue);
+      onChange(fieldKey, newValue)
     } else {
-      onChange(fieldKey, newValue);
+      onChange(fieldKey, newValue)
     }
-  };
+  }
 
   // Render array values as text
   const renderArrayValue = () => {
-    if (!Array.isArray(value)) return null;
-    
+    if (!Array.isArray(value)) return null
+
     return (
       <Box>
         <HStack gap={2} flexWrap="wrap">
@@ -47,16 +39,19 @@ const FormField = ({ fieldKey, value, onChange }) => {
           Arrays are displayed as read-only
         </Text>
       </Box>
-    );
-  };
+    )
+  }
 
   // Apply nested styling
-  const nestedStyles = nestedLevel > 0 ? {
-    ml: nestedLevel * 6,
-    pl: 4,
-    borderLeftWidth: '2px',
-    borderLeftColor: 'blue.200',
-  } : {};
+  const nestedStyles =
+    nestedLevel > 0
+      ? {
+          ml: nestedLevel * 6,
+          pl: 4,
+          borderLeftWidth: '2px',
+          borderLeftColor: 'blue.200',
+        }
+      : {}
 
   return (
     <Box mb={4} {...nestedStyles}>
@@ -78,10 +73,7 @@ const FormField = ({ fieldKey, value, onChange }) => {
 
         {/* Field Input */}
         {inputType === 'checkbox' ? (
-          <Checkbox.Root
-            checked={value}
-            onCheckedChange={(e) => handleChange(e.checked)}
-          >
+          <Checkbox.Root checked={value} onCheckedChange={(e) => handleChange(e.checked)}>
             <Checkbox.HiddenInput />
             <Checkbox.Control />
           </Checkbox.Root>
@@ -120,7 +112,7 @@ const FormField = ({ fieldKey, value, onChange }) => {
         )}
       </VStack>
     </Box>
-  );
-};
+  )
+}
 
-export default FormField;
+export default FormField

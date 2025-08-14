@@ -27,6 +27,7 @@ npm install react react-dom
 ### Optional UI Library Dependencies
 
 For Chakra UI support:
+
 ```bash
 npm install @chakra-ui/react @emotion/react
 ```
@@ -36,16 +37,16 @@ npm install @chakra-ui/react @emotion/react
 ### Table Component
 
 ```jsx
-import { Table } from '@sciphergfx/json-to-table';
+import { Table } from '@sciphergfx/json-to-table'
 
 const MyApp = () => {
   const handleSave = (nestedData, flatData) => {
-    console.log('Saved data:', nestedData);
-  };
+    console.log('Saved data:', nestedData)
+  }
 
   const handleFieldChange = (key, value, fullData) => {
-    console.log(`Field ${key} changed to:`, value);
-  };
+    console.log(`Field ${key} changed to:`, value)
+  }
 
   return (
     <Table
@@ -56,23 +57,23 @@ const MyApp = () => {
       saveButtonText="Save Changes"
       cancelButtonText="Reset Form"
       initialJson={JSON.stringify([
-        { id: 1, name: "John", email: "john@example.com" },
-        { id: 2, name: "Jane", email: "jane@example.com" }
+        { id: 1, name: 'John', email: 'john@example.com' },
+        { id: 2, name: 'Jane', email: 'jane@example.com' },
       ])}
     />
-  );
-};
+  )
+}
 ```
 
 ### Fields Component
 
 ```jsx
-import { Fields } from '@sciphergfx/json-to-table';
+import { Fields } from '@sciphergfx/json-to-table'
 
 const MyForm = () => {
   const handleSave = (nestedData, flatData) => {
-    console.log('Form data:', nestedData);
-  };
+    console.log('Form data:', nestedData)
+  }
 
   return (
     <Fields
@@ -80,22 +81,22 @@ const MyForm = () => {
       onSave={handleSave}
       onCancel={() => console.log('Form cancelled')}
       onFieldChange={(key, value, fullData) => {
-        console.log(`Field ${key} changed:`, value);
+        console.log(`Field ${key} changed:`, value)
       }}
       initialJson={JSON.stringify({
         user: {
-          name: "John Doe",
-          email: "john@example.com",
+          name: 'John Doe',
+          email: 'john@example.com',
           preferences: {
-            theme: "dark",
-            notifications: true
-          }
-        }
+            theme: 'dark',
+            notifications: true,
+          },
+        },
       })}
       showJsonInput={false} // Hide JSON input, show only form
     />
-  );
-};
+  )
+}
 ```
 
 ### Multi-Column Form Layout
@@ -103,7 +104,7 @@ const MyForm = () => {
 The `Fields` component supports multi-column layouts using the `columns` prop:
 
 ```jsx
-import { Fields } from '@sciphergfx/json-to-table';
+import { Fields } from '@sciphergfx/json-to-table'
 
 const MultiColumnForm = () => {
   return (
@@ -111,25 +112,26 @@ const MultiColumnForm = () => {
       uiLibrary="chakra"
       columns={3} // Creates a 3-column form layout
       onSave={(nestedData, flatData) => {
-        console.log('Form data:', nestedData);
+        console.log('Form data:', nestedData)
       }}
       initialJson={JSON.stringify({
-        firstName: "John",
-        lastName: "Doe", 
-        email: "john@example.com",
-        phone: "+1234567890",
-        address: "123 Main St",
-        city: "New York",
-        state: "NY",
-        zipCode: "10001",
-        country: "USA"
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        phone: '+1234567890',
+        address: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        country: 'USA',
       })}
     />
-  );
-};
+  )
+}
 ```
 
 **Column Layout Examples:**
+
 - `columns={1}` - Single column (default)
 - `columns={2}` - Two-column layout
 - `columns={3}` - Three-column layout
@@ -141,33 +143,33 @@ The fields are automatically distributed evenly across the specified number of c
 
 ### Table Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use for styling |
-| `onSave` | `(nestedData, flatData) => void` | - | Callback when save button is clicked |
-| `onCancel` | `() => void` | - | Callback when cancel button is clicked |
-| `onFieldChange` | `(key, value, fullData) => void` | - | Callback when any field changes |
-| `saveButtonText` | `string` | `'Save Changes'` | Text for the save button |
-| `cancelButtonText` | `string` | `'Reset Form'` | Text for the cancel button |
-| `initialJson` | `string` | `''` | Initial JSON string to load |
-| `customStyles` | `object` | `{}` | Custom styles object |
-| `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
+| Prop               | Type                                 | Default          | Description                            |
+| ------------------ | ------------------------------------ | ---------------- | -------------------------------------- |
+| `uiLibrary`        | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'`       | UI library to use for styling          |
+| `onSave`           | `(nestedData, flatData) => void`     | -                | Callback when save button is clicked   |
+| `onCancel`         | `() => void`                         | -                | Callback when cancel button is clicked |
+| `onFieldChange`    | `(key, value, fullData) => void`     | -                | Callback when any field changes        |
+| `saveButtonText`   | `string`                             | `'Save Changes'` | Text for the save button               |
+| `cancelButtonText` | `string`                             | `'Reset Form'`   | Text for the cancel button             |
+| `initialJson`      | `string`                             | `''`             | Initial JSON string to load            |
+| `customStyles`     | `object`                             | `{}`             | Custom styles object                   |
+| `showControls`     | `boolean`                            | `true`           | Whether to show save/cancel buttons    |
 
 ### Fields Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use for styling |
-| `onSave` | `(nestedData, flatData) => void` | - | Callback when save button is clicked |
-| `onCancel` | `() => void` | - | Callback when cancel button is clicked |
-| `onFieldChange` | `(key, value, fullData) => void` | - | Callback when any field changes |
-| `saveButtonText` | `string` | `'Save Changes'` | Text for the save button |
-| `cancelButtonText` | `string` | `'Reset Form'` | Text for the cancel button |
-| `initialJson` | `string` | `''` | Initial JSON string to load |
-| `customStyles` | `object` | `{}` | Custom styles object |
-| `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
-| `showJsonInput` | `boolean` | `true` | Whether to show JSON input textarea |
-| `columns` | `number` | `1` | Number of columns for form layout |
+| Prop               | Type                                 | Default          | Description                            |
+| ------------------ | ------------------------------------ | ---------------- | -------------------------------------- |
+| `uiLibrary`        | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'`       | UI library to use for styling          |
+| `onSave`           | `(nestedData, flatData) => void`     | -                | Callback when save button is clicked   |
+| `onCancel`         | `() => void`                         | -                | Callback when cancel button is clicked |
+| `onFieldChange`    | `(key, value, fullData) => void`     | -                | Callback when any field changes        |
+| `saveButtonText`   | `string`                             | `'Save Changes'` | Text for the save button               |
+| `cancelButtonText` | `string`                             | `'Reset Form'`   | Text for the cancel button             |
+| `initialJson`      | `string`                             | `''`             | Initial JSON string to load            |
+| `customStyles`     | `object`                             | `{}`             | Custom styles object                   |
+| `showControls`     | `boolean`                            | `true`           | Whether to show save/cancel buttons    |
+| `showJsonInput`    | `boolean`                            | `true`           | Whether to show JSON input textarea    |
+| `columns`          | `number`                             | `1`              | Number of columns for form layout      |
 
 ## Styling
 
@@ -192,7 +194,7 @@ You can override styles using the `customStyles` prop:
   customStyles={{
     container: { maxWidth: '800px' },
     table: { fontSize: '14px' },
-    button: { backgroundColor: '#007bff' }
+    button: { backgroundColor: '#007bff' },
   }}
 />
 ```
@@ -202,18 +204,23 @@ You can override styles using the `customStyles` prop:
 The package also exports utility functions for working with JSON:
 
 ```jsx
-import { flattenObject, unflattenObject, parseJsonSafely, getInputType } from '@sciphergfx/json-to-table';
+import {
+  flattenObject,
+  unflattenObject,
+  parseJsonSafely,
+  getInputType,
+} from '@sciphergfx/json-to-table'
 
 // Flatten nested objects
-const flat = flattenObject({ user: { name: 'John' } });
+const flat = flattenObject({ user: { name: 'John' } })
 // Result: { 'user.name': 'John' }
 
 // Unflatten back to nested
-const nested = unflattenObject({ 'user.name': 'John' });
+const nested = unflattenObject({ 'user.name': 'John' })
 // Result: { user: { name: 'John' } }
 
 // Safe JSON parsing
-const result = parseJsonSafely('{"name": "John"}');
+const result = parseJsonSafely('{"name": "John"}')
 // Result: { success: true, data: { name: 'John' } }
 ```
 
@@ -222,11 +229,11 @@ const result = parseJsonSafely('{"name": "John"}');
 The package includes full TypeScript definitions:
 
 ```typescript
-import { TableProps, FieldsProps } from '@sciphergfx/json-to-table';
+import { TableProps, FieldsProps } from '@sciphergfx/json-to-table'
 
 const MyComponent: React.FC<TableProps> = (props) => {
   // Your component logic
-};
+}
 ```
 
 ## Examples
@@ -240,7 +247,7 @@ const MyComponent: React.FC<TableProps> = (props) => {
     container: { padding: '2rem' },
     formCard: { border: '2px solid #e2e8f0' },
     input: { borderRadius: '8px' },
-    button: { backgroundColor: '#3b82f6' }
+    button: { backgroundColor: '#3b82f6' },
   }}
   onSave={(data) => console.log('Saved:', data)}
 />
@@ -254,7 +261,7 @@ const MyComponent: React.FC<TableProps> = (props) => {
   showControls={false}
   onFieldChange={(key, value, data) => {
     // Handle changes in your own way
-    updateMyState(data);
+    updateMyState(data)
   }}
 />
 ```

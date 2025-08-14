@@ -52,7 +52,6 @@ npx vercel --prod
    ```
 
 3. **Vercel will:**
-
    - Auto-detect framework (Vite)
    - Install dependencies
    - Run build command
@@ -80,7 +79,6 @@ The project includes a `vercel.json` with:
 If you need environment variables:
 
 1. **Via Vercel Dashboard:**
-
    - Go to Project Settings → Environment Variables
    - Add your variables
    - Redeploy
@@ -102,7 +100,6 @@ If you need environment variables:
 ### Add a custom domain:
 
 1. **Via Dashboard:**
-
    - Go to Project Settings → Domains
    - Add your domain
    - Follow DNS configuration
