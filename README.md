@@ -1,16 +1,65 @@
+### List Component
+
+```jsx
+import { List } from '@sciphergfx/json-to-table';
+
+const items = [
+  { label: 'Main', children: [{ label: 'Sample' }, { label: 'Flow 2' }] },
+  { label: 'Workflow Type', children: [] },
+  { label: 'Sample', children: [{ label: 'Sample' }, { label: 'Flow 2' }] },
+  { label: 'Flow 2' },
+];
+
+export const MyList = () => (
+  <List
+    uiLibrary="chakra"
+    mode="light" // or 'dark'
+    startIcon={<span style={{ fontSize: 14 }}>▦</span>}
+    parentOpenIcon={<span>▼</span>}
+    parentClosedIcon={<span>▶</span>}
+    parentIcon={<span>📁</span>}
+    childIcon={<span>🔗</span>}
+    hoverIcon={<span>⋯</span>}
+    // Option A: Sections with filters
+    sections={[
+      { id: 'parents', title: 'Parent Nodes', filter: (i) => Array.isArray(i.children) && i.children.length > 0, collapsible: true, defaultOpen: true },
+      { id: 'leaves', title: 'Leaf Nodes', filter: (i) => !i.children || i.children.length === 0, collapsible: true, defaultOpen: true },
+    ]}
+    // Option B: Group by function (alternative to sections)
+    // groupBy={(i) => i.label?.[0]?.toUpperCase() || 'Other'}
+    // sectionOrder={["A","B","C","Other"]}
+    onItemClick={(item) => console.log('Clicked:', item)}
+    onToggle={(item, isOpen) => console.log('Toggled', item.label, '->', isOpen)}
+  />
+);
+```
 # @sciphergfx/json-to-table
 
-UI-agnostic React components for JSON to Table and JSON to Form Fields conversion with support for Chakra UI, Tailwind CSS, and shadcn/ui.
+UI-agnostic React components for JSON → Table, JSON → Form Fields, and JSON → List, with support for Chakra UI, Tailwind CSS, and shadcn/ui.
 
 ## Features
 
 - 🎨 **UI Library Agnostic** - Works with Chakra UI, Tailwind CSS, shadcn/ui, or plain HTML
 - 📊 **JSON to Table** - Convert JSON arrays to editable tables
 - 📝 **JSON to Form Fields** - Generate form fields from JSON objects
+- 📁 **JSON to List** - Collapsible tree/list from JSON with hover actions and icons
 - 🔄 **Real-time Updates** - Get callbacks on field changes
 - 💾 **Save/Cancel Actions** - Built-in save and cancel functionality
 - 🎯 **TypeScript Support** - Full TypeScript definitions included
 - 📱 **Responsive** - Works on all screen sizes
+- 🧩 **Sections** - Group form fields and list items into collapsible sections
+- 🏷️ **Array chips** - Arrays of strings render as pill chips with add/delete
+- 🌓 **Per-component light/dark** - Switch `mode` per component (works with Chakra)
+
+## Headless Core (Lightweight)
+
+This package now provides a headless core with no UI library dependency. You style via `classNames` and `styles`, or override primitives with `renderers`.
+
+- `classNames`: slot-to-class mapping, e.g. `{ container, heading, sectionHeader, fieldLabel, input, textarea, chip, chipClose, button, secondaryButton, list, row, icon, label }`.
+- `styles`: per-slot inline styles, same keys as `classNames`.
+- `renderers`: override primitives like `{ Container, Box, Button, Input, Select, Textarea, Text, Heading, VStack, HStack, Card, Alert, Label }`.
+
+Chakra/shadcn/Tailwind can be used externally by supplying classes or renderers. The previous `uiLibrary` prop is deprecated for the core path.
 
 ## Installation
 
@@ -33,10 +82,10 @@ npm install @chakra-ui/react @emotion/react
 
 ## Quick Start
 
-### JsonToTable Component
+### Table Component
 
 ```jsx
-import { JsonToTable } from '@sciphergfx/json-to-table';
+import { Table } from '@sciphergfx/json-to-table';
 
 const MyApp = () => {
   const handleSave = (nestedData, flatData) => {
@@ -48,7 +97,7 @@ const MyApp = () => {
   };
 
   return (
-    <JsonToTable
+    <Table
       uiLibrary="tailwind" // "chakra" | "tailwind" | "shadcn"
       onSave={handleSave}
       onCancel={() => console.log('Cancelled')}
@@ -64,10 +113,10 @@ const MyApp = () => {
 };
 ```
 
-### JsonToFields Component
+### Fields Component
 
 ```jsx
-import { JsonToFields } from '@sciphergfx/json-to-table';
+import { Fields } from '@sciphergfx/json-to-table';
 
 const MyForm = () => {
   const handleSave = (nestedData, flatData) => {
@@ -75,8 +124,16 @@ const MyForm = () => {
   };
 
   return (
-    <JsonToFields
+    <Fields
       uiLibrary="shadcn"
+      // Group fields into collapsible sections (optional)
+      sections={[
+        { id: 'profile', title: 'Profile', description: 'Basic info', fields: ['name','email','website','role','joinDate'], collapsible: true, defaultOpen: true },
+        { id: 'preferences', title: 'Preferences', fields: ['preferences.theme','preferences.notifications','isActive'], collapsible: true, defaultOpen: true },
+        { id: 'security', title: 'Security', fields: ['password'], collapsible: true, defaultOpen: false },
+        { id: 'about', title: 'About', fields: ['bio','skills','tags'], collapsible: true, defaultOpen: true },
+      ]}
+      includeUnsectioned
       onSave={handleSave}
       onCancel={() => console.log('Form cancelled')}
       onFieldChange={(key, value, fullData) => {
@@ -90,7 +147,9 @@ const MyForm = () => {
             theme: "dark",
             notifications: true
           }
-        }
+        },
+        skills: ["React", "TypeScript"],
+        tags: ["dev","ui"], // Arrays of strings render as pill chips with add/delete
       })}
       showJsonInput={false} // Hide JSON input, show only form
     />
@@ -100,7 +159,7 @@ const MyForm = () => {
 
 ## API Reference
 
-### JsonToTable Props
+### Table Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -114,7 +173,7 @@ const MyForm = () => {
 | `customStyles` | `object` | `{}` | Custom styles object |
 | `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
 
-### JsonToFields Props
+### Fields Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -128,6 +187,29 @@ const MyForm = () => {
 | `customStyles` | `object` | `{}` | Custom styles object |
 | `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
 | `showJsonInput` | `boolean` | `true` | Whether to show JSON input textarea |
+| `sections` | `Array<{ id?, title, description?, fields: string[], collapsible?, defaultOpen? }>` | `null` | Group fields into sections |
+| `includeUnsectioned` | `boolean` | `false` | Show fields not in sections under an "Other" section |
+| `unsectionedTitle` | `string` | `'Other'` | Title for unsectioned fields section |
+
+### List Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use |
+| `mode` | `'light' \| 'dark'` | `'dark'` | Per-component color mode |
+| `startIcon` | `ReactNode` | `null` | Icon near header title |
+| `headerTitle` | `ReactNode` | `'Projects'` | Header title |
+| `headerDescription` | `ReactNode` | `null` | Header description text |
+| `parentOpenIcon` | `ReactNode` | `▼` | Icon for open parent rows |
+| `parentClosedIcon` | `ReactNode` | `▶` | Icon for closed parent rows |
+| `parentIcon` | `ReactNode` | `📁` | Item icon for parent rows (legacy) |
+| `childIcon` | `ReactNode` | `🗂️` | Item icon for child rows |
+| `hoverIcon` | `ReactNode` | `…` | Hover action icon at row end |
+| `sections` | `Array<{ id?, title, description?, collapsible?, defaultOpen?, filter?: (item) => boolean }>` | `null` | Explicit sections with filters |
+| `groupBy` | `(item) => string` | `null` | Auto sections by group key |
+| `sectionOrder` | `string[]` | `null` | Ordering for groupBy sections |
+| `onItemClick` | `(item) => void` | `() => {}` | Click handler |
+| `onToggle` | `(item, isOpen) => void` | `() => {}` | Parent toggle handler |
 
 ## Styling
 
@@ -148,7 +230,7 @@ When using `uiLibrary="shadcn"`, the components will apply shadcn/ui compatible 
 You can override styles using the `customStyles` prop:
 
 ```jsx
-<JsonToTable
+<Table
   customStyles={{
     container: { maxWidth: '800px' },
     table: { fontSize: '14px' },
@@ -187,9 +269,9 @@ const result = parseJsonSafely('{"name": "John"}');
 The package includes full TypeScript definitions:
 
 ```typescript
-import { JsonToTableProps, JsonToFieldsProps } from '@sciphergfx/json-to-table';
+import { TableProps, FieldsProps } from '@sciphergfx/json-to-table';
 
-const MyComponent: React.FC<JsonToTableProps> = (props) => {
+const MyComponent: React.FC<TableProps> = (props) => {
   // Your component logic
 };
 ```
@@ -199,7 +281,7 @@ const MyComponent: React.FC<JsonToTableProps> = (props) => {
 ### With Custom Styling
 
 ```jsx
-<JsonToFields
+<Fields
   uiLibrary="tailwind"
   customStyles={{
     container: { padding: '2rem' },
@@ -214,7 +296,7 @@ const MyComponent: React.FC<JsonToTableProps> = (props) => {
 ### Headless Usage (No UI Library)
 
 ```jsx
-<JsonToTable
+<Table
   uiLibrary="tailwind"
   showControls={false}
   onFieldChange={(key, value, data) => {

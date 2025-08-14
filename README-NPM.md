@@ -33,10 +33,10 @@ npm install @chakra-ui/react @emotion/react
 
 ## Quick Start
 
-### JsonToTable Component
+### Table Component
 
 ```jsx
-import { JsonToTable } from '@sciphergfx/json-to-table';
+import { Table } from '@sciphergfx/json-to-table';
 
 const MyApp = () => {
   const handleSave = (nestedData, flatData) => {
@@ -48,7 +48,7 @@ const MyApp = () => {
   };
 
   return (
-    <JsonToTable
+    <Table
       uiLibrary="tailwind" // "chakra" | "tailwind" | "shadcn"
       onSave={handleSave}
       onCancel={() => console.log('Cancelled')}
@@ -64,10 +64,10 @@ const MyApp = () => {
 };
 ```
 
-### JsonToFields Component
+### Fields Component
 
 ```jsx
-import { JsonToFields } from '@sciphergfx/json-to-table';
+import { Fields } from '@sciphergfx/json-to-table';
 
 const MyForm = () => {
   const handleSave = (nestedData, flatData) => {
@@ -75,7 +75,7 @@ const MyForm = () => {
   };
 
   return (
-    <JsonToFields
+    <Fields
       uiLibrary="shadcn"
       onSave={handleSave}
       onCancel={() => console.log('Form cancelled')}
@@ -100,14 +100,14 @@ const MyForm = () => {
 
 ### Multi-Column Form Layout
 
-The `JsonToFields` component supports multi-column layouts using the `columns` prop:
+The `Fields` component supports multi-column layouts using the `columns` prop:
 
 ```jsx
-import { JsonToFields } from '@sciphergfx/json-to-table';
+import { Fields } from '@sciphergfx/json-to-table';
 
 const MultiColumnForm = () => {
   return (
-    <JsonToFields
+    <Fields
       uiLibrary="chakra"
       columns={3} // Creates a 3-column form layout
       onSave={(nestedData, flatData) => {
@@ -139,7 +139,7 @@ The fields are automatically distributed evenly across the specified number of c
 
 ## API Reference
 
-### JsonToTable Props
+### Table Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -153,7 +153,7 @@ The fields are automatically distributed evenly across the specified number of c
 | `customStyles` | `object` | `{}` | Custom styles object |
 | `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
 
-### JsonToFields Props
+### Fields Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -188,7 +188,7 @@ When using `uiLibrary="shadcn"`, the components will apply shadcn/ui compatible 
 You can override styles using the `customStyles` prop:
 
 ```jsx
-<JsonToTable
+<Table
   customStyles={{
     container: { maxWidth: '800px' },
     table: { fontSize: '14px' },
@@ -202,12 +202,7 @@ You can override styles using the `customStyles` prop:
 The package also exports utility functions for working with JSON:
 
 ```jsx
-import { 
-  flattenObject, 
-  unflattenObject, 
-  parseJsonSafely,
-  getInputType 
-} from '@sciphergfx/json-to-table';
+import { flattenObject, unflattenObject, parseJsonSafely, getInputType } from '@sciphergfx/json-to-table';
 
 // Flatten nested objects
 const flat = flattenObject({ user: { name: 'John' } });
@@ -227,9 +222,9 @@ const result = parseJsonSafely('{"name": "John"}');
 The package includes full TypeScript definitions:
 
 ```typescript
-import { JsonToTableProps, JsonToFieldsProps } from '@sciphergfx/json-to-table';
+import { TableProps, FieldsProps } from '@sciphergfx/json-to-table';
 
-const MyComponent: React.FC<JsonToTableProps> = (props) => {
+const MyComponent: React.FC<TableProps> = (props) => {
   // Your component logic
 };
 ```
@@ -239,7 +234,7 @@ const MyComponent: React.FC<JsonToTableProps> = (props) => {
 ### With Custom Styling
 
 ```jsx
-<JsonToFields
+<Fields
   uiLibrary="tailwind"
   customStyles={{
     container: { padding: '2rem' },
@@ -254,7 +249,7 @@ const MyComponent: React.FC<JsonToTableProps> = (props) => {
 ### Headless Usage (No UI Library)
 
 ```jsx
-<JsonToTable
+<Table
   uiLibrary="tailwind"
   showControls={false}
   onFieldChange={(key, value, data) => {

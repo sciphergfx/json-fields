@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { getUIComponents, getUIClasses } from '../utils/uiAdapters';
 import { getDisplayName } from '../utils/jsonUtils';
 
 /**
- * JsonToTable Component - UI Library Agnostic
+ * Table Component - UI Library Agnostic
  * @param {Object} props - Component props
  * @param {string} props.uiLibrary - UI library to use ("chakra", "tailwind", "shadcn")
  * @param {Function} props.onSave - Callback when save is triggered (nestedData, flatData) => void
@@ -15,7 +15,7 @@ import { getDisplayName } from '../utils/jsonUtils';
  * @param {Object} props.customStyles - Custom styles object
  * @param {boolean} props.showControls - Whether to show save/cancel buttons
  */
-const JsonToTable = ({
+const Table = ({
   uiLibrary = 'chakra',
   onSave,
   onCancel,
@@ -25,12 +25,25 @@ const JsonToTable = ({
   initialJson = '',
   customStyles = {},
   showControls = true,
+  // pagination & cache
+  pagination = true,
+  pageSize = 10,
+  cacheSize = 3,
+  initialPage = 1,
+  onPageChange,
+  // optional custom pagination override
+  paginationComponent: PaginationComponent = null,
+  paginationRenderer = null,
   ...props
 }) => {
   const [jsonInput, setJsonInput] = useState(initialJson);
   const [tableData, setTableData] = useState(null);
   const [error, setError] = useState('');
   const [editableData, setEditableData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(initialPage > 0 ? initialPage : 1);
+  // simple LRU cache for page slices
+  const pageCacheRef = useRef(new Map()); // key: page number, value: rows slice
+  const lruRef = useRef([]); // array of page numbers, most-recent at end
 
   const UI = getUIComponents(uiLibrary);
 
@@ -48,6 +61,15 @@ const JsonToTable = ({
       setError('');
     }
   }, [initialJson]); // parseJson is stable, no need to include
+
+  // Reset cache on mount and whenever editableData changes (e.g., new JSON parsed)
+  useEffect(() => {
+    // reset cache
+    pageCacheRef.current.clear();
+    lruRef.current = [];
+    // clamp and reset page
+    setCurrentPage((prev) => (initialPage > 0 ? initialPage : 1));
+  }, [editableData, initialPage]);
 
   const parseJson = (jsonString = jsonInput) => {
     setError('');
@@ -120,10 +142,53 @@ const JsonToTable = ({
     return Array.from(allKeys);
   };
 
+  const totalRows = useMemo(() => (Array.isArray(editableData) ? editableData.length : 0), [editableData]);
+  const totalPages = useMemo(() => {
+    if (!pagination) return 1;
+    return Math.max(1, Math.ceil((totalRows || 0) / Math.max(1, pageSize)));
+  }, [pagination, totalRows, pageSize]);
+
+  const getPageSlice = (page) => {
+    if (!pagination || !Array.isArray(editableData)) return editableData || [];
+    const safePage = Math.min(Math.max(1, page), totalPages);
+    // cache lookup
+    if (pageCacheRef.current.has(safePage)) {
+      // update LRU
+      const idx = lruRef.current.indexOf(safePage);
+      if (idx !== -1) lruRef.current.splice(idx, 1);
+      lruRef.current.push(safePage);
+      return pageCacheRef.current.get(safePage);
+    }
+    const start = (safePage - 1) * pageSize;
+    const end = start + pageSize;
+    const slice = editableData.slice(start, end);
+    // add to cache
+    pageCacheRef.current.set(safePage, slice);
+    lruRef.current.push(safePage);
+    // evict if needed
+    while (lruRef.current.length > Math.max(1, cacheSize)) {
+      const evictPage = lruRef.current.shift();
+      if (evictPage != null) pageCacheRef.current.delete(evictPage);
+    }
+    return slice;
+  };
+
+  const goToPage = (nextPage) => {
+    const clamped = Math.min(Math.max(1, nextPage), totalPages);
+    if (clamped !== currentPage) {
+      setCurrentPage(clamped);
+      if (typeof onPageChange === 'function') onPageChange(clamped);
+    }
+  };
+
+  const prevPage = () => goToPage(currentPage - 1);
+  const nextPageFn = () => goToPage(currentPage + 1);
+
   const renderTable = () => {
     if (!editableData || editableData.length === 0) return null;
 
     const columns = getColumns();
+    const rows = pagination ? getPageSlice(currentPage) : editableData;
 
     return (
       <UI.Box 
@@ -148,7 +213,7 @@ const JsonToTable = ({
             </UI.Tr>
           </UI.Thead>
           <UI.Tbody className={getUIClasses(uiLibrary, 'Tbody')}>
-            {editableData.map((row, rowIndex) => (
+            {rows.map((row, rowIndex) => (
               <UI.Tr 
                 key={rowIndex}
                 className={getUIClasses(uiLibrary, 'Tr')}
@@ -162,7 +227,11 @@ const JsonToTable = ({
                     <UI.Input
                       type="text"
                       value={row[column] || ''}
-                      onChange={(e) => handleCellEdit(rowIndex, column, e.target.value)}
+                      onChange={(e) => handleCellEdit(
+                        pagination ? ((currentPage - 1) * pageSize + rowIndex) : rowIndex,
+                        column,
+                        e.target.value
+                      )}
                       className={getUIClasses(uiLibrary, 'Input')}
                       style={{ 
                         border: 'none', 
@@ -176,6 +245,56 @@ const JsonToTable = ({
             ))}
           </UI.Tbody>
         </UI.Table>
+        {pagination && totalPages > 1 && (() => {
+          const pagerProps = {
+            currentPage,
+            totalPages,
+            pageSize,
+            cacheSize,
+            goToPage,
+            prevPage,
+            nextPage: nextPageFn,
+          };
+          if (typeof paginationRenderer === 'function') {
+            return (
+              <UI.Box style={{ marginTop: '12px' }}>
+                {paginationRenderer(pagerProps)}
+              </UI.Box>
+            );
+          }
+          if (PaginationComponent) {
+            const Comp = PaginationComponent;
+            return (
+              <UI.Box style={{ marginTop: '12px' }}>
+                <Comp {...pagerProps} />
+              </UI.Box>
+            );
+          }
+          return (
+            <UI.HStack
+              className={getUIClasses(uiLibrary, 'HStack')}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px', ...(customStyles.pagination || {}) }}
+            >
+              <UI.Button
+                onClick={prevPage}
+                disabled={currentPage <= 1}
+                className={getUIClasses(uiLibrary, 'Button', 'secondary')}
+                style={{ opacity: currentPage <= 1 ? 0.5 : 1 }}
+              >
+                Prev
+              </UI.Button>
+              <UI.Text>{currentPage} / {totalPages}</UI.Text>
+              <UI.Button
+                onClick={nextPageFn}
+                disabled={currentPage >= totalPages}
+                className={getUIClasses(uiLibrary, 'Button', 'secondary')}
+                style={{ opacity: currentPage >= totalPages ? 0.5 : 1 }}
+              >
+                Next
+              </UI.Button>
+            </UI.HStack>
+          );
+        })()}
       </UI.Box>
     );
   };
@@ -209,8 +328,6 @@ const JsonToTable = ({
             }}
           />
         </UI.Box>
-
-
 
         {error && (
           <UI.Alert 
@@ -250,4 +367,4 @@ const JsonToTable = ({
   );
 };
 
-export default JsonToTable;
+export default Table;

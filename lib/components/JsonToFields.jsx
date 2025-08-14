@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getUIComponents, getUIClasses } from '../utils/uiAdapters';
 import { flattenObject, unflattenObject, getInputType, parseJsonSafely, getDisplayName } from '../utils/jsonUtils';
 
 /**
- * JsonToFields Component - UI Library Agnostic
+ * Fields Component - UI Library Agnostic
  * @param {Object} props - Component props
- * @param {string} props.uiLibrary - UI library to use ("chakra", "tailwind", "shadcn")
+ * @param {string} props.uiLibrary - (deprecated, ignored in headless)
+ * @param {Object} [props.classNames] - slot classes for headless styling
+ * @param {Object} [props.styles] - slot inline styles for headless styling
+ * @param {Object} [props.renderers] - primitive render overrides: { Container, Box, Button, Input, Select, Textarea, Text, Heading, VStack, HStack, Card, Alert, Label }
  * @param {Function} props.onSave - Callback when save is triggered (nestedData, flatData) => void
  * @param {Function} props.onCancel - Callback when cancel is triggered () => void
  * @param {Function} props.onFieldChange - Callback when field changes (key, value, fullData) => void
@@ -15,10 +17,18 @@ import { flattenObject, unflattenObject, getInputType, parseJsonSafely, getDispl
  * @param {Object} props.customStyles - Custom styles object
  * @param {boolean} props.showControls - Whether to show save/cancel buttons
  * @param {boolean} props.showJsonInput - Whether to show JSON input textarea
- * @param {number} props.columns - Number of columns for form layout (default: 1)
+ * @param {number} props.columns - Number of columns for form layout (default: 2)
  * @param {Object} props.fieldConfig - Field configuration for custom input types
+ * @param {Array} [props.sections] - Optional sections to group fields: [{ id?, title, description?, fields: string[], collapsible?: boolean, defaultOpen?: boolean }]
+ * @param {boolean} [props.includeUnsectioned=false] - If true, render fields not listed in sections under an "Other" section
+ * @param {string} [props.unsectionedTitle='Other'] - Title for the unsectioned fields section
  */
-const JsonToFields = ({
+const Fields = ({
+  // headless styling hooks
+  classNames = {},
+  styles: styleProps = {},
+  renderers = {},
+  // deprecated uiLibrary (ignored in headless; kept for backward compat)
   uiLibrary = 'chakra',
   onSave,
   onCancel,
@@ -29,8 +39,11 @@ const JsonToFields = ({
   customStyles = {},
   showControls = true,
   showJsonInput = true,
-  columns = 1,
+  columns = 2,
   fieldConfig = {},
+  sections = null,
+  includeUnsectioned = false,
+  unsectionedTitle = 'Other',
   ...props
 }) => {
   const [jsonInput, setJsonInput] = useState(initialJson);
@@ -38,8 +51,30 @@ const JsonToFields = ({
   const [originalFormData, setOriginalFormData] = useState({});
   const [, setParsedJson] = useState(null);
   const [error, setError] = useState('');
+  // Local input state for tags fields keyed by field name
+  const [tagInputs, setTagInputs] = useState({});
+  // Open state for collapsible sections
+  const [sectionOpenIds, setSectionOpenIds] = useState(() => new Set());
 
-  const UI = getUIComponents(uiLibrary);
+  // Headless primitives; can be overridden by `renderers`
+  const UI = {
+    Container: renderers.Container || 'div',
+    Box: renderers.Box || 'div',
+    Button: renderers.Button || 'button',
+    Input: renderers.Input || 'input',
+    Select: renderers.Select || 'select',
+    Textarea: renderers.Textarea || 'textarea',
+    Text: renderers.Text || 'span',
+    Heading: renderers.Heading || 'h2',
+    VStack: renderers.VStack || 'div',
+    HStack: renderers.HStack || 'div',
+    Card: renderers.Card || 'div',
+    Alert: renderers.Alert || 'div',
+    Label: renderers.Label || 'label',
+  };
+
+  // No-op for legacy class mapping
+  const getUIClasses = () => '';
 
 
 
@@ -313,6 +348,99 @@ const JsonToFields = ({
 
   // Array field renderer
   const renderArrayField = (key, value, displayName, fieldTypeConfig) => {
+    const arr = Array.isArray(value) ? value : [];
+    const isStringArray = arr.every(v => typeof v === 'string');
+
+    // If it's an array of strings, render as pill chips with add/delete
+    if (isStringArray) {
+      const tags = Array.isArray(formData[key]) ? formData[key] : [];
+      const newTag = tagInputs[key] || '';
+
+      const addTag = (tag) => {
+        const t = (tag || '').trim();
+        if (!t) return;
+        if (tags.includes(t)) return;
+        handleFieldChange(key, [...tags, t]);
+        setTagInputs(prev => ({ ...prev, [key]: '' }));
+      };
+
+      const removeTag = (tag) => {
+        handleFieldChange(key, tags.filter(t => t !== tag));
+      };
+
+      const onKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          addTag(newTag);
+        } else if (e.key === 'Backspace' && !newTag && tags.length) {
+          removeTag(tags[tags.length - 1]);
+        }
+      };
+
+      const pillStyle = {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '4px 8px',
+        borderRadius: '999px',
+        background: '#eef2ff',
+        color: '#3730a3',
+        border: '1px solid #c7d2fe',
+        fontSize: '12px'
+      };
+
+      const pillCloseStyle = {
+        cursor: 'pointer',
+        border: 'none',
+        background: 'transparent',
+        color: '#4338ca',
+        fontSize: '14px',
+        lineHeight: 1
+      };
+
+      return (
+        <UI.Box 
+          key={key}
+          className={getUIClasses(uiLibrary, 'Box')}
+          style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+        >
+          <UI.Label 
+            className={getUIClasses(uiLibrary, 'Label')}
+            style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+          >
+            {displayName}
+          </UI.Label>
+          <UI.Box style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+            {tags.map((tag) => (
+              <span key={tag} style={pillStyle}>
+                {tag}
+                <button aria-label={`Remove ${tag}`} onClick={() => removeTag(tag)} style={pillCloseStyle}>
+                  ×
+                </button>
+              </span>
+            ))}
+            <UI.Input
+              type="text"
+              value={newTag}
+              onChange={(e) => setTagInputs(prev => ({ ...prev, [key]: e.target.value }))}
+              onKeyDown={onKeyDown}
+              placeholder={fieldTypeConfig.placeholder || `Add ${displayName} and press Enter`}
+              className={getUIClasses(uiLibrary, 'Input')}
+              style={{ minWidth: '140px', flex: '0 1 auto', ...customStyles.input }}
+            />
+            <UI.Button
+              onClick={() => addTag(newTag)}
+              className={getUIClasses(uiLibrary, 'Button', 'secondary')}
+              style={{ padding: '6px 10px' }}
+            >
+              Add
+            </UI.Button>
+          </UI.Box>
+        </UI.Box>
+      );
+    }
+
+    // Fallback: render as JSON textarea for non-string arrays
     return (
       <UI.Box 
         key={key}
@@ -332,7 +460,6 @@ const JsonToFields = ({
               const parsed = JSON.parse(e.target.value);
               handleFieldChange(key, parsed);
             } catch {
-              // Keep the raw string value for now
               handleFieldChange(key, e.target.value);
             }
           }}
@@ -344,6 +471,96 @@ const JsonToFields = ({
             ...customStyles.textarea 
           }}
         />
+      </UI.Box>
+    );
+  };
+
+  // Tags field renderer (pill chips with delete and input to add)
+  const renderTagsField = (key, value, displayName, fieldTypeConfig) => {
+    const tags = Array.isArray(formData[key]) ? formData[key] : [];
+    const newTag = tagInputs[key] || '';
+
+    const addTag = (tag) => {
+      const t = (tag || '').trim();
+      if (!t) return;
+      if (tags.includes(t)) return;
+      handleFieldChange(key, [...tags, t]);
+      setTagInputs(prev => ({ ...prev, [key]: '' }));
+    };
+
+    const removeTag = (tag) => {
+      handleFieldChange(key, tags.filter(t => t !== tag));
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        addTag(newTag);
+      } else if (e.key === 'Backspace' && !newTag && tags.length) {
+        // quick remove last tag
+        removeTag(tags[tags.length - 1]);
+      }
+    };
+
+    const pillStyle = {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '6px',
+      padding: '4px 8px',
+      borderRadius: '999px',
+      background: '#eef2ff',
+      color: '#3730a3',
+      border: '1px solid #c7d2fe',
+      fontSize: '12px'
+    };
+
+    const pillCloseStyle = {
+      cursor: 'pointer',
+      border: 'none',
+      background: 'transparent',
+      color: '#4338ca',
+      fontSize: '14px',
+      lineHeight: 1
+    };
+
+    return (
+      <UI.Box 
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label 
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Label>
+        <UI.Box style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+          {tags.map((tag) => (
+            <span key={tag} style={pillStyle}>
+              {tag}
+              <button aria-label={`Remove ${tag}`} onClick={() => removeTag(tag)} style={pillCloseStyle}>
+                ×
+              </button>
+            </span>
+          ))}
+          <UI.Input
+            type="text"
+            value={newTag}
+            onChange={(e) => setTagInputs(prev => ({ ...prev, [key]: e.target.value }))}
+            onKeyDown={onKeyDown}
+            placeholder={fieldTypeConfig.placeholder || 'Add tag and press Enter'}
+            className={getUIClasses(uiLibrary, 'Input')}
+            style={{ minWidth: '140px', flex: '0 1 auto', ...customStyles.input }}
+          />
+          <UI.Button
+            onClick={() => addTag(newTag)}
+            className={getUIClasses(uiLibrary, 'Button', 'secondary')}
+            style={{ padding: '6px 10px' }}
+          >
+            Add
+          </UI.Button>
+        </UI.Box>
       </UI.Box>
     );
   };
@@ -412,6 +629,149 @@ const JsonToFields = ({
 
   // Function to render form fields in columns
   const renderFormFields = () => {
+    // If sections prop is provided, render grouped sections first
+    if (Array.isArray(sections) && sections.length) {
+      const allKeys = Object.keys(formData);
+      const used = new Set();
+      const sectionBlocks = sections.map((sec, idx) => {
+        const secId = sec.id || `section-${idx}`;
+        const listed = Array.isArray(sec.fields) ? sec.fields : [];
+        listed.forEach(k => used.add(k));
+        // Build section content honoring columns
+        const sectionKeys = listed.filter(k => allKeys.includes(k));
+        const content = (() => {
+          if (columns <= 1) {
+            return (
+              <UI.VStack key={secId} style={{ gap: '1rem' }}>
+                {sectionKeys.map(k => renderFormField(k, formData[k]))}
+              </UI.VStack>
+            );
+          }
+          const fieldsPerColumn = Math.ceil(sectionKeys.length / columns);
+          const columnGroups = [];
+          for (let i = 0; i < columns; i++) {
+            const startIndex = i * fieldsPerColumn;
+            const endIndex = Math.min(startIndex + fieldsPerColumn, sectionKeys.length);
+            columnGroups.push(sectionKeys.slice(startIndex, endIndex));
+          }
+          const gridStyles = {
+            display: 'grid',
+            gridTemplateColumns: `repeat(${columns}, 1fr)`,
+            gap: '2rem',
+            width: '100%',
+            ...customStyles.formGrid
+          };
+          return (
+            <UI.Box key={secId} className={getUIClasses(uiLibrary, 'Box')} style={gridStyles}>
+              {columnGroups.map((group, idx) => (
+                <UI.VStack key={idx} className={getUIClasses(uiLibrary, 'VStack')} style={{ gap: '1rem', ...customStyles.formColumn }}>
+                  {group.map(k => renderFormField(k, formData[k]))}
+                </UI.VStack>
+              ))}
+            </UI.Box>
+          );
+        })();
+
+        const baselineOpen = !!(sec.defaultOpen || !sec.collapsible);
+        const open = sectionOpenIds.has(secId) ? !baselineOpen : baselineOpen;
+        const toggle = () => setSectionOpenIds(prev => {
+          const next = new Set(prev);
+          if (next.has(secId)) next.delete(secId); else next.add(secId);
+          return next;
+        });
+
+        return (
+          <UI.Box key={`wrap-${secId}`} style={{ marginBottom: '1.25rem' }}>
+            <UI.Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {sec.collapsible && (
+                  <button aria-label={`Toggle ${sec.title}`} onClick={toggle} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                    <span>{open ? '▼' : '▶'}</span>
+                  </button>
+                )}
+                <UI.Heading className={getUIClasses(uiLibrary, 'Heading')} style={{ margin: 0 }}>
+                  {sec.title}
+                </UI.Heading>
+              </UI.Box>
+              {sec.description && (
+                <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ opacity: 0.8 }}>{sec.description}</UI.Text>
+              )}
+            </UI.Box>
+            {(!sec.collapsible || open) && content}
+          </UI.Box>
+        );
+      });
+
+      // Unsectioned fields
+      let otherBlock = null;
+      if (includeUnsectioned) {
+        const remaining = allKeys.filter(k => !used.has(k));
+        if (remaining.length) {
+          const secId = 'unsectioned';
+          const baselineOpen = true;
+          const open = sectionOpenIds.has(secId) ? !baselineOpen : baselineOpen;
+          const toggle = () => setSectionOpenIds(prev => {
+            const next = new Set(prev);
+            if (next.has(secId)) next.delete(secId); else next.add(secId);
+            return next;
+          });
+          otherBlock = (
+            <UI.Box key={`wrap-${secId}`} style={{ marginBottom: '1.25rem' }}>
+              <UI.Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button aria-label={`Toggle ${unsectionedTitle}`} onClick={toggle} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                    <span>{open ? '▼' : '▶'}</span>
+                  </button>
+                  <UI.Heading className={getUIClasses(uiLibrary, 'Heading')} style={{ margin: 0 }}>
+                    {unsectionedTitle}
+                  </UI.Heading>
+                </UI.Box>
+              </UI.Box>
+              {open && (() => {
+                if (columns <= 1) {
+                  return (
+                    <UI.VStack style={{ gap: '1rem' }}>
+                      {remaining.map(k => renderFormField(k, formData[k]))}
+                    </UI.VStack>
+                  );
+                }
+                const fieldsPerColumn = Math.ceil(remaining.length / columns);
+                const columnGroups = [];
+                for (let i = 0; i < columns; i++) {
+                  const startIndex = i * fieldsPerColumn;
+                  const endIndex = Math.min(startIndex + fieldsPerColumn, remaining.length);
+                  columnGroups.push(remaining.slice(startIndex, endIndex));
+                }
+                const gridStyles = {
+                  display: 'grid',
+                  gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                  gap: '2rem',
+                  width: '100%',
+                  ...customStyles.formGrid
+                };
+                return (
+                  <UI.Box className={getUIClasses(uiLibrary, 'Box')} style={gridStyles}>
+                    {columnGroups.map((group, idx) => (
+                      <UI.VStack key={idx} className={getUIClasses(uiLibrary, 'VStack')} style={{ gap: '1rem', ...customStyles.formColumn }}>
+                        {group.map(k => renderFormField(k, formData[k]))}
+                      </UI.VStack>
+                    ))}
+                  </UI.Box>
+                );
+              })()}
+            </UI.Box>
+          );
+        }
+      }
+
+      return (
+        <UI.VStack className={getUIClasses(uiLibrary, 'VStack')} style={{ gap: '1rem', ...customStyles.formStack }}>
+          {sectionBlocks}
+          {otherBlock}
+        </UI.VStack>
+      );
+    }
+
     const formEntries = Object.entries(formData);
     
     if (columns <= 1) {
@@ -541,4 +901,4 @@ const JsonToFields = ({
   );
 };
 
-export default JsonToFields;
+export default Fields;
