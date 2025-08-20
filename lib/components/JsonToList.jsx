@@ -32,7 +32,7 @@ export default function List({
   // deprecated: ui library selection (kept for backward compat, ignored in headless)
   _uiLibrary = 'chakra',
   startIcon = null,
-  headerTitle = 'Projects',
+  headerTitle = 'My List title',
   headerDescription = null,
   mode = 'dark',
   parentIcon = null,

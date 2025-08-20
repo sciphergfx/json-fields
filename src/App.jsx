@@ -1,9 +1,8 @@
-  import { useState, useEffect } from 'react'
+  import { Box, Container, Tabs, Text } from '@chakra-ui/react'
 import Editor from '@monaco-editor/react'
-import { Box, Container, Tabs, Text } from '@chakra-ui/react'
-import { Table, Fields, List } from '../lib'
+import { useEffect, useState } from 'react'
+import { Fields, List, Table } from '../lib'
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from './utils/storage'
-import { DEFAULT_JSON } from './constants/sampleData'
 
 // Field config defaults (module scope to avoid re-creating per render)
 const sampleFieldConfig = {
@@ -20,6 +19,8 @@ const sampleFieldConfig = {
     options: ['React', 'Vue', 'Angular', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 'Java', 'C++'],
   },
   tags: { type: 'tags' },
+  body: { type: 'key-value-list', showHeader: false },
+  headers: { type: 'object' },
   bio: { type: 'textarea', rows: 3 },
 }
 const FIELD_CONFIG_DEFAULT = JSON.stringify(sampleFieldConfig, null, 2)
@@ -38,6 +39,14 @@ const sampleFormDataRich = JSON.stringify(
     rating: 75,
     skills: ['React', 'Node.js'],
     tags: ['alpha', 'beta', 'gamma'],
+    body: [{
+      mykey: 'key',
+      myvalue: 'value',
+    }],
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ...',
+    },
     bio: 'UX-focused designer and frontend developer.',
     preferences: { theme: 'dark', notifications: true },
     isActive: true,
@@ -72,6 +81,7 @@ function App() {
 
   // Theme
   const [theme, setTheme] = useState('dark')
+  const [bundleStats, setBundleStats] = useState(null)
   const palette =
     theme === 'light'
       ? {
@@ -104,6 +114,8 @@ function App() {
           icon: '#e5e7eb',
           hover: '#333333',
         }
+
+  // Rich sample includes a headers object to demonstrate key-value-list
 
   // Demo custom pager renderer for Table
   const renderCustomPager = ({
@@ -779,11 +791,12 @@ function App() {
                         >
                           Load rich sample
                         </Box>
+                        {/* API demo button removed */}
                       </Box>
                     </Box>
-                    <Box flex={activeViewKind === 'fields' ? 'none' : '1 1 auto'} minH={0}>
+                    <Box flex={activeViewKind === 'fields' ? 'none' : '1 1 auto'}   height={'50%'}>
                       <Editor
-                        height={activeViewKind === 'fields' ? 'calc(36vh)' : '100%'}
+                   
                         defaultLanguage="json"
                         value={editorValue}
                         theme={theme === 'light' ? 'light' : 'vs-dark'}
@@ -857,6 +870,7 @@ function App() {
                         >
                           Load sample
                         </Box>
+                        {/* API-specific config loader removed; keep config generic */}
                       </Box>
                     </Box>
                     <Editor
@@ -904,6 +918,11 @@ function App() {
                       <Text fontSize="12px" color={palette.subtext}>
                         Preview
                       </Text>
+                      {bundleStats && (
+                        <Box fontSize="11px" color={palette.subtext}>
+                          Bundle: {(bundleStats?.totals?.gzipBytes / 1024).toFixed(1)} KB gzip
+                        </Box>
+                      )}
                       <Box display="flex" gap="8px">
                         {[
                           { id: 'fields', label: 'Form' },
@@ -960,8 +979,8 @@ function App() {
                             {
                               id: 'about',
                               title: 'About',
-                              description: 'Biography & tags',
-                              fields: ['bio', 'skills', 'tags'],
+                              description: 'Biography, skills, tags, headers',
+                              fields: ['bio', 'skills', 'tags', 'headers'],
                               collapsible: true,
                               defaultOpen: true,
                             },

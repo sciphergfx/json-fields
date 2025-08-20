@@ -81,6 +81,137 @@ const Fields = ({
     Label: renderers.Label || 'label',
   }
 
+  // Key-Value list renderer (generic object/array of objects)
+  const renderKeyValueListField = (key, value, displayName, fieldTypeConfig = {}) => {
+    const originalIsArray = Array.isArray(value)
+    const originalIsObjectMap = !originalIsArray && typeof value === 'object' && value !== null
+
+    // Normalize to array of row objects for editing
+    const rows = (() => {
+      if (originalIsArray) return value
+      if (originalIsObjectMap) return Object.entries(value).map(([k, v]) => ({ key: k, value: v }))
+      return []
+    })()
+
+    // Determine columns to render
+    let columns = []
+    if (rows.length) {
+      const set = new Set()
+      rows.forEach((r) => Object.keys(r || {}).forEach((k) => set.add(k)))
+      columns = Array.from(set)
+    } else if (Array.isArray(fieldTypeConfig.columns)) {
+      columns = fieldTypeConfig.columns
+    } else if (originalIsObjectMap) {
+      columns = ['key', 'value']
+    } else {
+      columns = ['key', 'value'] // sensible default
+    }
+
+    // Helpers to rebuild the original shape
+    const commit = (nextRows) => {
+      if (originalIsArray) {
+        handleFieldChange(key, nextRows)
+      } else if (originalIsObjectMap) {
+        const nextObj = {}
+        nextRows.forEach((r) => {
+          const k = r.key ?? r.name
+          const v = r.value ?? r.val
+          if (k !== undefined && k !== '') nextObj[k] = v
+        })
+        handleFieldChange(key, nextObj)
+      } else {
+        handleFieldChange(key, nextRows)
+      }
+    }
+
+    const updateCell = (rowIdx, colKey, val) => {
+      const next = rows.map((r, i) => (i === rowIdx ? { ...r, [colKey]: val } : r))
+      commit(next)
+    }
+
+    const addRow = () => {
+      const template = columns.reduce((acc, c) => ({ ...acc, [c]: '' }), {})
+      commit([...rows, template])
+    }
+
+    const removeRow = (idx) => {
+      const next = rows.filter((_, i) => i !== idx)
+      commit(next)
+    }
+
+    const gridRow = {
+      display: 'grid',
+      gridTemplateColumns: `${'1fr '.repeat(columns.length)}auto`.trim(),
+      gap: '0.5rem',
+      alignItems: 'center',
+      padding: '3px 0px',
+    }
+
+    return (
+      <UI.Box
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        <UI.Label
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{
+            display: 'block',
+            fontWeight: '600',
+            marginBottom: '0.5rem',
+            ...customStyles.fieldLabel,
+          }}
+        >
+          {displayName}
+        </UI.Label>
+
+        {/* Header row (optional) */}
+        {fieldTypeConfig.showHeader !== false && (
+          <UI.Box style={{ ...gridRow, fontSize: '12px', opacity: 0.8 }}>
+            {columns.map((c) => (
+              <UI.Text key={`hdr-${c}`}>{c}</UI.Text>
+            ))}
+            <span />
+          </UI.Box>
+        )}
+
+        <UI.VStack style={{ gap: '0.5rem' }}>
+          {rows.map((row, idx) => (
+            <UI.Box key={`${key}-${idx}`} style={gridRow}>
+              {columns.map((c) => (
+                <UI.Input
+                  key={`${key}-${idx}-${c}`}
+                  type="text"
+                  placeholder={c}
+                  value={row?.[c] ?? ''}
+                  onChange={(e) => updateCell(idx, c, e.target.value)}
+                  className={getUIClasses(uiLibrary, 'Input')}
+                  style={customStyles.input}
+                />
+              ))}
+              <UI.Button
+                aria-label={`Remove ${displayName} row ${idx + 1}`}
+                onClick={() => removeRow(idx)}
+                className={getUIClasses(uiLibrary, 'Button', 'secondary')}
+                style={{ padding: '6px 10px' }}
+              >
+                ×
+              </UI.Button>
+            </UI.Box>
+          ))}
+
+          <UI.Button
+            onClick={addRow}
+            className={getUIClasses(uiLibrary, 'Button', 'default')}
+            style={{ alignSelf: 'flex-start', padding: '6px 10px' }}
+          >
+            + Add {displayName}
+          </UI.Button>
+        </UI.VStack>
+      </UI.Box>
+    )
+  }
+
   // No-op for legacy class mapping
   const getUIClasses = () => ''
 
@@ -172,6 +303,8 @@ const Fields = ({
         return renderSliderField(key, value, displayName, fieldTypeConfig)
       case 'tags':
         return _renderTagsField(key, value, displayName, fieldTypeConfig)
+      case 'key-value-list':
+        return renderKeyValueListField(key, value, displayName, fieldTypeConfig)
       case 'array':
         return renderArrayField(key, value, displayName, fieldTypeConfig)
       case 'object':
