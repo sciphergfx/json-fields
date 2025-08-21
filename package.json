@@ -1,7 +1,7 @@
 {
-  "name": "@sciphergfx/json-to-table",
+  "name": "@sciphergfx/json-fields",
   "version": "1.1.3",
-  "description": "UI-agnostic React components for JSON to Table and JSON to Form Fields conversion with support for Chakra UI, Tailwind CSS, and shadcn/ui",
+  "description": "UI-agnostic React component for generating Form Fields from JSON with support for Chakra UI, Tailwind CSS, and shadcn/ui",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -13,25 +13,25 @@
   "type": "module",
   "keywords": [
     "json",
-    "table",
     "form",
+    "fields",
     "converter",
     "react",
     "chakra-ui",
     "tailwind",
     "shadcn",
-    "json-to-table",
+    "json-fields",
     "json-to-form",
     "ui-agnostic",
     "components"
   ],
-  "homepage": "https://github.com/sciphergfx/json-to-table",
+  "homepage": "https://github.com/sciphergfx/json-fields",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sciphergfx/json-to-table.git"
+    "url": "git+https://github.com/sciphergfx/json-fields.git"
   },
   "bugs": {
-    "url": "https://github.com/sciphergfx/json-to-table/issues"
+    "url": "https://github.com/sciphergfx/json-fields/issues"
   },
   "engines": {
     "node": ">=20.12.0",

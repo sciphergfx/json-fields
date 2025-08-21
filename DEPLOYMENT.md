@@ -23,7 +23,7 @@
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd jsonToTable
+cd json-fields
 
 # Install dependencies
 npm install
@@ -298,7 +298,7 @@ For containerized deployments, add a health check:
 ## Post-Deployment Checklist
 
 - [ ] Verify all environment variables are set
-- [ ] Test both JSON to Table and JSON to Form features
+- [ ] Test JSON Fields (form) functionality
 - [ ] Check error handling works correctly
 - [ ] Verify localStorage functionality
 - [ ] Test on multiple browsers

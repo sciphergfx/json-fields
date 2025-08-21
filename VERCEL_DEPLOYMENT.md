@@ -44,10 +44,10 @@ npx vercel --prod
 2. **Follow the prompts:**
 
    ```
-   ? Set up and deploy "~/apps/jsonToTable"? [Y/n] Y
+   ? Set up and deploy "~/apps/json-fields"? [Y/n] Y
    ? Which scope do you want to deploy to? Your-Username
    ? Link to existing project? [y/N] N
-   ? What's your project's name? json-to-table
+   ? What's your project's name? json-fields
    ? In which directory is your code located? ./
    ```
 

@@ -1,6 +1,6 @@
-# Contributing to JSON Tools Suite
+# Contributing to JSON Fields
 
-Thank you for your interest in contributing to JSON Tools Suite! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to JSON Fields! This document provides guidelines and instructions for contributing to the project.
 
 ## Table of Contents
 
@@ -38,12 +38,12 @@ We are committed to providing a friendly, safe, and welcoming environment for al
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/your-username/jsonToTable.git
-   cd jsonToTable
+   git clone https://github.com/sciphergfx/json-fields.git
+   cd json-fields
    ```
 3. Add the upstream remote:
    ```bash
-   git remote add upstream https://github.com/original-owner/jsonToTable.git
+   git remote add upstream https://github.com/sciphergfx/json-fields.git
    ```
 
 ## Development Setup
@@ -79,7 +79,7 @@ npm run dev
 
 ### 1. Find an Issue
 
-- Check the [Issues](https://github.com/owner/jsonToTable/issues) page
+- Check the [Issues](https://github.com/sciphergfx/json-fields/issues) page
 - Look for issues labeled `good first issue` or `help wanted`
 - Comment on the issue to let others know you're working on it
 
@@ -367,4 +367,4 @@ Contributors will be recognized in:
 - Release notes
 - Contributors page
 
-Thank you for contributing to JSON Tools Suite! 🎉
+Thank you for contributing to JSON Fields! 🎉
