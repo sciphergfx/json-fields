@@ -240,7 +240,7 @@ vercel rollback [deployment-url]
 vercel alias [deployment-url] [alias]
 
 # Example
-vercel alias json-tools-abc123.vercel.app my-json-tools.vercel.app
+vercel alias json-fields-ten.vercel.app json-fields-ten.vercel.app
 
 # Remove alias
 vercel alias rm [alias]

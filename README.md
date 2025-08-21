@@ -144,7 +144,15 @@ const MyForm = () => {
 
 ### Tailwind CSS
 
-When using `uiLibrary="tailwind"`, the components will apply Tailwind classes. Make sure you have Tailwind CSS configured in your project.
+When using `uiLibrary="tailwind"`, the components output Tailwind utility classes. This package does not bundle Tailwind.
+
+Requirements:
+- Tailwind CSS configured in your app (tailwind.config.js, PostCSS, etc.).
+
+Quick setup:
+1) Install and configure Tailwind per official docs.
+2) Ensure your content globs include your app code using `<Fields />` so classes are not purged.
+3) Use `uiLibrary="tailwind"` in `<Fields />`.
 
 ### Chakra UI
 
@@ -152,7 +160,16 @@ When using `uiLibrary="chakra"`, the components will use Chakra UI components. M
 
 ### shadcn/ui
 
-When using `uiLibrary="shadcn"`, the components will apply shadcn/ui compatible classes.
+When using `uiLibrary="shadcn"`, the components output class names compatible with shadcn/ui. This package does not bundle shadcn/ui or Tailwind.
+
+Requirements:
+- Tailwind CSS configured in your app.
+- shadcn/ui installed (or compatible design tokens/variables like `bg-primary`, `text-muted-foreground`, etc.).
+
+Quick setup:
+1) Install Tailwind and shadcn/ui per their docs.
+2) Ensure your Tailwind theme exposes the tokens used by shadcn/ui.
+3) Use `uiLibrary="shadcn"` in `<Fields />`.
 
 ### Custom Styles
 
