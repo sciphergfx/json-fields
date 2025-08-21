@@ -24,6 +24,32 @@ export default {
       sourcemap: true,
       exports: 'named',
     },
+    // UMD build for CDN/script-tag usage
+    {
+      file: 'dist/json-fields.umd.js',
+      format: 'umd',
+      name: 'JsonFields',
+      sourcemap: true,
+      exports: 'named',
+      globals: {
+        react: 'React',
+        'react-dom': 'ReactDOM',
+        'react/jsx-runtime': 'jsxRuntime',
+      },
+    },
+    // Minified UMD filename (plugins already include terser)
+    {
+      file: 'dist/json-fields.umd.min.js',
+      format: 'umd',
+      name: 'JsonFields',
+      sourcemap: true,
+      exports: 'named',
+      globals: {
+        react: 'React',
+        'react-dom': 'ReactDOM',
+        'react/jsx-runtime': 'jsxRuntime',
+      },
+    },
   ],
   plugins: [
     peerDepsExternal(),
@@ -70,5 +96,5 @@ export default {
       },
     },
   ],
-  external: ['react', 'react-dom'],
+  external: ['react', 'react-dom', 'react/jsx-runtime'],
 }
