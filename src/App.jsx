@@ -9,7 +9,7 @@ import { FIELD_CONFIG_DEFAULT, sampleFieldConfig, sampleFormDataRich } from './c
 
 function App() {
   // State
-  const [theme, setTheme] = useState('dark')
+  const [theme, setTheme] = useState('light')
   const [editorValue, setEditorValue] = useState(sampleFormDataRich)
   const [parsedJson, setParsedJson] = useState(null)
   const [jsonError, setJsonError] = useState(null)
@@ -19,6 +19,7 @@ function App() {
   const [activeViewKind] = useState('fields')
   const [bundleStats] = useState(null)
   const [forks, setForks] = useState(null)
+  const [uiLibrary, setUiLibrary] = useState('chakra')
 
   // Theme palette
   const palette = getPalette(theme)
@@ -36,7 +37,7 @@ function App() {
       })
       .catch(() => {})
     return () => controller.abort()
-  }, [])
+  }, [REPO_OWNER, REPO_NAME])
 
   // Persist last active tab key (legacy compatibility)
   useEffect(() => {
@@ -74,8 +75,8 @@ function App() {
   }, [fieldConfigValue])
 
   return (
-    <Box minH="100vh" bg={palette.background}>
-      <DemoHeader theme={theme} setTheme={setTheme} palette={palette} repoOwner={REPO_OWNER} repoName={REPO_NAME} forks={forks} />
+    <div style={{ minHeight: '100vh', background: palette.background }}>
+      <DemoHeader theme={theme} setTheme={setTheme} palette={palette} repoOwner={REPO_OWNER} repoName={REPO_NAME} forks={forks} uiLibrary={uiLibrary} setUiLibrary={setUiLibrary} />
 
       <Container maxW="8xl" py={6}>
         <Box bg={palette.panel} borderRadius="8px" border={`1px solid ${palette.border}`} overflow="hidden">
@@ -91,19 +92,23 @@ function App() {
               fieldConfigError={fieldConfigError}
               activeViewKind={activeViewKind}
             />
-            <PreviewPanel
-              palette={palette}
-              theme={theme}
-              parsedJson={parsedJson}
-              jsonError={jsonError}
-              bundleStats={bundleStats}
-              editorValue={editorValue}
-              parsedFieldConfig={parsedFieldConfig}
-            />
           </Box>
         </Box>
       </Container>
-    </Box>
+
+      <Container maxW="8xl" py={0} pt={0}>
+        <PreviewPanel
+          palette={palette}
+          theme={theme}
+          parsedJson={parsedJson}
+          jsonError={jsonError}
+          bundleStats={bundleStats}
+          editorValue={editorValue}
+          parsedFieldConfig={parsedFieldConfig}
+          uiLibrary={uiLibrary}
+        />
+      </Container>
+    </div>
   )
 }
 

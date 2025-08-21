@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { getUIClasses as _getUIClasses } from '../utils/uiAdapters'
 import {
   flattenObject,
   unflattenObject,
@@ -212,8 +213,8 @@ const Fields = ({
     )
   }
 
-  // No-op for legacy class mapping
-  const getUIClasses = () => ''
+  // Use adapter class mapping for tailwind/shadcn; Chakra returns empty string
+  const getUIClasses = (lib, component, variant) => _getUIClasses(lib, component, variant)
 
   const parseJson = useCallback(
     (jsonString = jsonInput) => {

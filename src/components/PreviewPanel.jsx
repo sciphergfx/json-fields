@@ -10,25 +10,28 @@ export default function PreviewPanel({
   bundleStats,
   editorValue,
   parsedFieldConfig,
+  uiLibrary,
 }) {
   const customFormStyles = getFormStyles(palette, theme)
+  const CBox = uiLibrary === 'chakra' ? Box : 'div'
+  const CText = uiLibrary === 'chakra' ? Text : 'span'
 
   return (
-    <Box flex="0 0 70%" minW={0}>
-      <Box px={3} py={2} bg={palette.muted} borderBottom={`1px solid ${palette.border}`} display="flex" alignItems="center" justifyContent="space-between">
-        <Text fontSize="12px" color={palette.subtext}>Preview</Text>
+    <CBox style={{ flex: '0 0 70%', minWidth: 0 }}>
+      <CBox style={{ padding: '8px 12px', background: palette.muted, borderBottom: `1px solid ${palette.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <CText style={{ fontSize: '12px', color: palette.subtext }}>Preview</CText>
         {bundleStats && (
-          <Box fontSize="11px" color={palette.subtext}>
+          <CBox style={{ fontSize: '11px', color: palette.subtext }}>
             Bundle: {(bundleStats?.totals?.gzipBytes / 1024).toFixed(1)} KB gzip
-          </Box>
+          </CBox>
         )}
-      </Box>
+      </CBox>
 
-      <Box p={4}>
+      <CBox style={{ padding: '16px' }}>
         {!parsedJson && jsonError && (
-          <Box p={3} bg={palette.muted} border={`1px solid ${palette.border}`} borderRadius="6px" color={palette.subtext} fontSize="14px">
+          <CBox style={{ padding: '12px', background: palette.muted, border: `1px solid ${palette.border}`, borderRadius: '6px', color: palette.subtext, fontSize: '14px' }}>
             Fix JSON to preview.
-          </Box>
+          </CBox>
         )}
 
         {parsedJson && (
@@ -36,6 +39,7 @@ export default function PreviewPanel({
             customStyles={customFormStyles}
             initialJson={editorValue}
             fieldConfig={parsedFieldConfig}
+            {...(uiLibrary !== 'none' ? { uiLibrary } : {})}
             columns={2}
             sections={[
               { id: 'profile', title: 'Profile', description: 'Basic information', fields: ['name', 'email', 'website', 'role', 'joinDate', 'age', 'salary', 'rating'], collapsible: true, defaultOpen: true },
@@ -48,7 +52,7 @@ export default function PreviewPanel({
             cancelButtonText="Reset"
           />
         )}
-      </Box>
-    </Box>
+      </CBox>
+    </CBox>
   )
 }

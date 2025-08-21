@@ -1,6 +1,6 @@
 import { Box, Text } from '@chakra-ui/react'
 
-export default function DemoHeader({ theme, setTheme, palette, repoOwner, repoName, forks }) {
+export default function DemoHeader({ theme, setTheme, palette, repoOwner, repoName, forks, uiLibrary, setUiLibrary }) {
   return (
     <Box
       bg={palette.panel}
@@ -21,6 +21,35 @@ export default function DemoHeader({ theme, setTheme, palette, repoOwner, repoNa
         </Text>
       </Box>
       <Box display="flex" alignItems="center" gap="12px">
+        {/* UI Library Switcher */}
+        <Box display="flex" gap="8px" alignItems="center">
+          {[
+            { key: 'none', label: 'None' },
+            { key: 'chakra', label: 'Chakra' },
+            { key: 'tailwind', label: 'Tailwind' },
+            { key: 'shadcn', label: 'shadcn' },
+          ].map((opt) => (
+            <Box
+              key={opt.key}
+              as="button"
+              onClick={() => setUiLibrary && setUiLibrary(opt.key)}
+              bg={uiLibrary === opt.key ? '#0f172a' : '#111827'}
+              color="#ffffff"
+              border={`1px solid ${palette.border}`}
+              borderRadius="6px"
+              px="10px"
+              py="6px"
+              fontSize="12px"
+              fontWeight="700"
+              letterSpacing="0.02em"
+              cursor="pointer"
+              _hover={{ background: '#0b1220' }}
+              title={`Use ${opt.label} styles`}
+            >
+              {opt.label}
+            </Box>
+          ))}
+        </Box>
         <Box
           as="button"
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
