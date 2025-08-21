@@ -1,6 +1,6 @@
 {
   "name": "@sciphergfx/json-fields",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "UI-agnostic React component for generating Form Fields from JSON with support for Chakra UI, Tailwind CSS, and shadcn/ui",
   "private": false,
   "main": "dist/index.js",
@@ -75,8 +75,12 @@
     "@emotion/react": "^11.14.0"
   },
   "peerDependenciesMeta": {
-    "@chakra-ui/react": { "optional": true },
-    "@emotion/react": { "optional": true }
+    "@chakra-ui/react": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.0",
