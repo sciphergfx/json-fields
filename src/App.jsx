@@ -9,7 +9,7 @@ import { FIELD_CONFIG_DEFAULT, sampleFieldConfig, sampleFormDataRich } from './c
 
 function App() {
   // State
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState('dark')
   const [editorValue, setEditorValue] = useState(sampleFormDataRich)
   const [parsedJson, setParsedJson] = useState(null)
   const [jsonError, setJsonError] = useState(null)
@@ -91,13 +91,7 @@ function App() {
               setFieldConfigValue={setFieldConfigValue}
               fieldConfigError={fieldConfigError}
               activeViewKind={activeViewKind}
-            />
-          </Box>
-        </Box>
-      </Container>
-
-      <Container maxW="8xl" py={0} pt={0}>
-        <PreviewPanel
+            /> <PreviewPanel
           palette={palette}
           theme={theme}
           parsedJson={parsedJson}
@@ -106,8 +100,12 @@ function App() {
           editorValue={editorValue}
           parsedFieldConfig={parsedFieldConfig}
           uiLibrary={uiLibrary}
-        />
+        /> 
+          </Box>
+        </Box>  
       </Container>
+ 
+     
     </div>
   )
 }

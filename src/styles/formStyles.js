@@ -23,6 +23,13 @@ export function getFormStyles(palette, theme) {
       border: `1px solid ${palette.border}`,
     },
     formStack: { gap: '20px' },
+    // Ensure multi-column sections in the demo stay in a row
+    formGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+      gap: '2rem',
+      width: '100%',
+    },
     fieldContainer: { marginBottom: '20px' },
     fieldLabel: {
       color: theme === 'light' ? palette.text : '#ffffff',
