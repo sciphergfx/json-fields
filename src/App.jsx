@@ -9,7 +9,7 @@ import { FIELD_CONFIG_DEFAULT, sampleFieldConfig, sampleFormDataRich } from './c
 
 function App() {
   // State
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState('dark')
   const [editorValue, setEditorValue] = useState(sampleFormDataRich)
   const [parsedJson, setParsedJson] = useState(null)
   const [jsonError, setJsonError] = useState(null)
@@ -23,9 +23,9 @@ function App() {
   // Theme palette
   const palette = getPalette(theme)
 
-  // GitHub repo stats
-  const REPO_OWNER = 'sciphergfx'
-  const REPO_NAME = 'json-fields'
+  // GitHub repo stats (from env, with defaults)
+  const REPO_OWNER = import.meta.env.VITE_GITHUB_REPO_OWNER || 'sciphergfx'
+  const REPO_NAME = import.meta.env.VITE_GITHUB_REPO_NAME || 'json-fields'
 
   useEffect(() => {
     const controller = new AbortController()

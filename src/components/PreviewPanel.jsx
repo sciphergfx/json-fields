@@ -14,7 +14,7 @@ export default function PreviewPanel({
   const customFormStyles = getFormStyles(palette, theme)
 
   return (
-    <Box flex="1 1 50%" minW={0}>
+    <Box flex="0 0 70%" minW={0}>
       <Box px={3} py={2} bg={palette.muted} borderBottom={`1px solid ${palette.border}`} display="flex" alignItems="center" justifyContent="space-between">
         <Text fontSize="12px" color={palette.subtext}>Preview</Text>
         {bundleStats && (

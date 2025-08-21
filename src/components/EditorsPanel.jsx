@@ -1,6 +1,6 @@
 import { Box, Text } from '@chakra-ui/react'
 import Editor from '@monaco-editor/react'
-import { FIELD_CONFIG_DEFAULT, sampleFormDataRich } from '../constants/demoData'
+import { FIELD_CONFIG_DEFAULT } from '../constants/demoData'
 
 export default function EditorsPanel({
   theme,
@@ -14,14 +14,13 @@ export default function EditorsPanel({
   activeViewKind = 'fields',
 }) {
   return (
-    <Box display="flex" gap="0" minH="70vh" borderTop={`1px solid ${palette.border}`}>
+    <Box display="flex" gap="0" minH="70vh" borderTop={`1px solid ${palette.border}`} flex="0 0 30%">
       {/* Left: Data JSON editor */}
       <Box flex="1 1 50%" borderRight={`1px solid ${palette.border}`} minW={0} display="flex" flexDirection="column" minH={0}>
         <Box display="flex" alignItems="center" justifyContent="space-between" px={3} py={2} bg={palette.muted} borderBottom={`1px solid ${palette.border}`}>
           <Text fontSize="12px" color={palette.subtext}>Data JSON</Text>
           <Box display="flex" gap="8px">
             <Box as="button" onClick={() => setEditorValue(JSON.stringify(JSON.parse(editorValue || 'null'), null, 2))} bg="transparent" color={palette.subtext} border={`1px solid ${palette.border}`} borderRadius="6px" px="10px" py="4px" fontSize="12px">Format</Box>
-            <Box as="button" onClick={() => setEditorValue(sampleFormDataRich)} bg="transparent" color={palette.subtext} border={`1px solid ${palette.border}`} borderRadius="6px" px="10px" py="4px" fontSize="12px">Load rich sample</Box>
           </Box>
         </Box>
         <Box flex={activeViewKind === 'fields' ? 'none' : '1 1 auto'} height={'50vh'}>

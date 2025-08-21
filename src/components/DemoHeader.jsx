@@ -24,8 +24,8 @@ export default function DemoHeader({ theme, setTheme, palette, repoOwner, repoNa
         <Box
           as="button"
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          bg={palette.muted}
-          color={palette.text}
+          bg="#111827"
+          color="#ffffff"
           border={`1px solid ${palette.border}`}
           borderRadius="6px"
           px="12px"
@@ -33,7 +33,7 @@ export default function DemoHeader({ theme, setTheme, palette, repoOwner, repoNa
           fontSize="14px"
           fontWeight="600"
           cursor="pointer"
-          _hover={{ background: palette.hover }}
+          _hover={{ background: '#0f172a' }}
           aria-label="Toggle theme"
           title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
         >
@@ -44,27 +44,27 @@ export default function DemoHeader({ theme, setTheme, palette, repoOwner, repoNa
           href={`https://github.com/${repoOwner}/${repoName}`}
           target="_blank"
           rel="noreferrer"
-          bg={theme === 'light' ? '#f8fafc' : '#0f172a'}
-          color={palette.text}
+          bg="#111827"
+          color="#ffffff"
           border={`1px solid ${palette.border}`}
           borderRadius="6px"
           px="12px"
           py="6px"
           fontSize="14px"
           fontWeight="600"
-          _hover={{ background: palette.hover, borderColor: palette.border }}
+          _hover={{ background: '#0f172a', borderColor: palette.border }}
         >
           GitHub ↗
         </Box>
         <Box
-          bg={theme === 'light' ? '#eef2ff' : '#111827'}
-          color={theme === 'light' ? '#1e3a8a' : '#93c5fd'}
+          bg={ '#111827'} 
           border={`1px solid ${palette.border}`}
-          borderRadius="9999px"
-          px="10px"
-          py="4px"
-          fontSize="12px"
+          borderRadius="6px"
+        px="12px"
+          py="6px"
+          fontSize="14px"
           fontWeight="600"
+          color="#ffffff"
         >
           Forks: {forks ?? '—'}
         </Box>
