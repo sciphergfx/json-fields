@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import babel from '@rollup/plugin-babel'
 import terser from '@rollup/plugin-terser'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
+import { Buffer } from 'node:buffer'
 import { readFileSync, writeFileSync } from 'fs'
 import { gzipSizeSync } from 'gzip-size'
 
