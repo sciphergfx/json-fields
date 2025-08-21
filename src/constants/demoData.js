@@ -1,0 +1,51 @@
+// Demo data and defaults for JsonFields demo
+
+export const sampleFieldConfig = {
+  email: { type: 'email' },
+  website: { type: 'url' },
+  joinDate: { type: 'date' },
+  password: { type: 'password' },
+  role: { type: 'select', options: ['developer', 'designer', 'manager', 'analyst', 'intern'] },
+  age: { type: 'number', min: 0, max: 120, step: 1 },
+  salary: { type: 'number', min: 0, step: 1000 },
+  rating: { type: 'slider', min: 0, max: 100, step: 1 },
+  skills: {
+    type: 'multi-select',
+    options: ['React', 'Vue', 'Angular', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 'Java', 'C++'],
+  },
+  tags: { type: 'tags' },
+  body: { type: 'key-value-list', showHeader: false },
+  headers: { type: 'object' },
+  bio: { type: 'textarea', rows: 3 },
+}
+
+export const FIELD_CONFIG_DEFAULT = JSON.stringify(sampleFieldConfig, null, 2)
+
+export const sampleFormDataRich = JSON.stringify(
+  {
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    website: 'https://example.com',
+    joinDate: '2024-06-01',
+    password: 'secret',
+    role: 'designer',
+    age: 32,
+    salary: 120000,
+    rating: 75,
+    skills: ['React', 'Node.js'],
+    tags: ['alpha', 'beta', 'gamma'],
+    body: [{
+      mykey: 'key',
+      myvalue: 'value',
+    }],
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ...',
+    },
+    bio: 'UX-focused designer and frontend developer.',
+    preferences: { theme: 'dark', notifications: true },
+    isActive: true,
+  },
+  null,
+  2,
+)
