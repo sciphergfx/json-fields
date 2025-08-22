@@ -23,6 +23,7 @@ import {
  * @param {string} props.initialJson - Initial JSON string
  * @param {Object} props.customStyles - Custom styles object
  * @param {boolean} props.showControls - Whether to show save/cancel buttons
+ * @param {boolean} props.inlineLabels - Whether to render labels inline with fields
  * @param {number} props.columns - Number of columns for form layout (default: 2)
  * @param {Object} props.fieldConfig - Field configuration for custom input types
  * @param {Array} [props.sections] - Optional sections to group fields: [{ id?, title, description?, fields: string[], collapsible?: boolean, defaultOpen?: boolean }]
@@ -34,6 +35,11 @@ const Fields = ({
   _classNames = {},
   styles: _styleProps = {},
   renderers = {},
+  // advanced overrides
+  customFieldRenderers = {}, // map of fieldKey => (ctx) => ReactNode
+  customInputRenderers = {}, // map of type => (ctx) => ReactNode
+  customControlRenderers = {}, // map of fieldKey or type => (ctx) => ReactNode (returns just control)
+  customLabelRenderers = {}, // map of fieldKey or type => (ctx) => ReactNode (returns just label)
   // deprecated uiLibrary (ignored in headless; kept for backward compat)
   uiLibrary = 'chakra',
   onSave,
@@ -44,7 +50,7 @@ const Fields = ({
   initialJson = '',
   customStyles = {},
   showControls = true,
-  
+  inlineLabels = false,
   columns = 2,
   fieldConfig = {},
   sections = null,
@@ -283,6 +289,47 @@ const Fields = ({
     const fieldTypeConfig = getInputType(value, key, fieldConfig)
     const displayName = getDisplayName(key)
 
+    // Parent-aware renderer context
+    const rendererCtx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig,
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: {
+        uiLibrary,
+        onSave,
+        onCancel,
+        onFieldChange,
+        saveButtonText,
+        cancelButtonText,
+        initialJson,
+        customStyles,
+        showControls,
+        inlineLabels,
+        columns,
+        fieldConfig,
+        sections,
+        includeUnsectioned,
+        unsectionedTitle,
+        ...props,
+      },
+    }
+
+    // 1) Per-field override takes precedence
+    const fieldOverride = customFieldRenderers?.[key]
+    if (typeof fieldOverride === 'function') {
+      return fieldOverride(rendererCtx)
+    }
+
+    // 2) Per-type override next
+    const typeOverride = customInputRenderers?.[fieldTypeConfig.type]
+    if (typeof typeOverride === 'function') {
+      return typeOverride(rendererCtx)
+    }
+
     // Handle different field types based on configuration
     switch (fieldTypeConfig.type) {
       case 'checkbox':
@@ -354,6 +401,39 @@ const Fields = ({
 
   // Checkbox field renderer
   const renderCheckboxField = (key, value, displayName) => {
+    const ctx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig: { type: 'checkbox' },
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+    const labelNode =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.checkbox === 'function' && customLabelRenderers.checkbox(ctx)) || (
+        <UI.Text
+          className={getUIClasses(uiLibrary, 'Text')}
+          style={{ fontWeight: '500', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Text>
+      )
+
+    const controlNode =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.checkbox === 'function' && customControlRenderers.checkbox(ctx)) || (
+        <input
+          type="checkbox"
+          checked={formData[key] || false}
+          onChange={(e) => handleFieldChange(key, e.target.checked)}
+          className={getUIClasses(uiLibrary, 'Input', 'checkbox')}
+          style={customStyles.checkbox}
+        />
+      )
+
     return (
       <UI.Box
         key={key}
@@ -370,19 +450,8 @@ const Fields = ({
             ...customStyles.label,
           }}
         >
-          <input
-            type="checkbox"
-            checked={formData[key] || false}
-            onChange={(e) => handleFieldChange(key, e.target.checked)}
-            className={getUIClasses(uiLibrary, 'Input', 'checkbox')}
-            style={customStyles.checkbox}
-          />
-          <UI.Text
-            className={getUIClasses(uiLibrary, 'Text')}
-            style={{ fontWeight: '500', ...customStyles.fieldLabel }}
-          >
-            {displayName}
-          </UI.Text>
+          {controlNode}
+          {labelNode}
         </UI.Label>
       </UI.Box>
     )
@@ -390,28 +459,31 @@ const Fields = ({
 
   // Select field renderer
   const renderSelectField = (key, value, displayName, fieldTypeConfig) => {
-    return (
-      <UI.Box
-        key={key}
-        className={getUIClasses(uiLibrary, 'Box')}
-        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
-      >
-        <UI.Label
-          className={getUIClasses(uiLibrary, 'Label')}
-          style={{
-            display: 'block',
-            fontWeight: '600',
-            marginBottom: '0.5rem',
-            ...customStyles.fieldLabel,
-          }}
-        >
+    const ctx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig,
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+    const labelEl =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.select === 'function' && customLabelRenderers.select(ctx)) || (
+        <UI.Label className={getUIClasses(uiLibrary, 'Label')} style={{ ...customStyles.fieldLabel, marginBottom: inlineLabels ? 0 : '0.5rem' }}>
           {displayName}
         </UI.Label>
+      )
+    const controlEl =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.select === 'function' && customControlRenderers.select(ctx)) || (
         <UI.Select
           value={formData[key] || ''}
           onChange={(e) => handleFieldChange(key, e.target.value)}
           className={getUIClasses(uiLibrary, 'Select')}
-          style={{ width: '100%', ...customStyles.select }}
+          style={{ [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%', ...customStyles.select }}
         >
           <option value="">Select {displayName}</option>
           {fieldTypeConfig.options?.map((option) => (
@@ -420,6 +492,24 @@ const Fields = ({
             </option>
           ))}
         </UI.Select>
+      )
+    return (
+      <UI.Box
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        {inlineLabels ? (
+          <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
+            {controlEl}
+          </UI.Box>
+        ) : (
+          <>
+            {labelEl}
+            {controlEl}
+          </>
+        )}
       </UI.Box>
     )
   }
@@ -472,86 +562,134 @@ const Fields = ({
 
   // Textarea field renderer
   const renderTextareaField = (key, value, displayName, fieldTypeConfig) => {
+    const ctx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig,
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+    const labelEl =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.textarea === 'function' && customLabelRenderers.textarea(ctx)) || (
+        <UI.Label className={getUIClasses(uiLibrary, 'Label')} style={{ ...customStyles.fieldLabel, marginBottom: inlineLabels ? 0 : '0.5rem' }}>
+          {displayName}
+        </UI.Label>
+      )
+    const controlEl =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.textarea === 'function' && customControlRenderers.textarea(ctx)) || (
+        <UI.Textarea
+          value={formData[key] || ''}
+          onChange={(e) => handleFieldChange(key, e.target.value)}
+          className={getUIClasses(uiLibrary, 'Textarea')}
+          style={{
+            [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%',
+            minHeight: `${(fieldTypeConfig.rows || 4) * 1.5}rem`,
+            ...customStyles.textarea,
+          }}
+        />
+      )
     return (
       <UI.Box
         key={key}
         className={getUIClasses(uiLibrary, 'Box')}
         style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
       >
-        <UI.Label
-          className={getUIClasses(uiLibrary, 'Label')}
-          style={{
-            display: 'block',
-            fontWeight: '600',
-            marginBottom: '0.5rem',
-            ...customStyles.fieldLabel,
-          }}
-        >
-          {displayName}
-        </UI.Label>
-        <UI.Textarea
-          value={formData[key] || ''}
-          onChange={(e) => handleFieldChange(key, e.target.value)}
-          className={getUIClasses(uiLibrary, 'Textarea')}
-          style={{
-            width: '100%',
-            minHeight: `${(fieldTypeConfig.rows || 4) * 1.5}rem`,
-            ...customStyles.textarea,
-          }}
-        />
+        {inlineLabels ? (
+          <UI.Box style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
+            {controlEl}
+          </UI.Box>
+        ) : (
+          <>
+            {labelEl}
+            {controlEl}
+          </>
+        )}
       </UI.Box>
     )
   }
 
   // Special input field renderer (email, url, date, password)
   const renderSpecialInputField = (key, value, displayName, fieldTypeConfig) => {
+    const ctx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig,
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+    const labelEl =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.[fieldTypeConfig.type] === 'function' && customLabelRenderers[fieldTypeConfig.type](ctx)) || (
+        <UI.Label className={getUIClasses(uiLibrary, 'Label')} style={{ ...customStyles.fieldLabel, marginBottom: inlineLabels ? 0 : '0.5rem' }}>
+          {displayName}
+        </UI.Label>
+      )
+    const controlEl =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.[fieldTypeConfig.type] === 'function' && customControlRenderers[fieldTypeConfig.type](ctx)) || (
+        <UI.Input
+          type={fieldTypeConfig.type}
+          value={formData[key] || ''}
+          onChange={(e) => handleFieldChange(key, e.target.value)}
+          className={getUIClasses(uiLibrary, 'Input')}
+          style={{ [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%', ...customStyles.input }}
+        />
+      )
     return (
       <UI.Box
         key={key}
         className={getUIClasses(uiLibrary, 'Box')}
         style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
       >
-        <UI.Label
-          className={getUIClasses(uiLibrary, 'Label')}
-          style={{
-            display: 'block',
-            fontWeight: '600',
-            marginBottom: '0.5rem',
-            ...customStyles.fieldLabel,
-          }}
-        >
-          {displayName}
-        </UI.Label>
-        <UI.Input
-          type={fieldTypeConfig.type}
-          value={formData[key] || ''}
-          onChange={(e) => handleFieldChange(key, e.target.value)}
-          className={getUIClasses(uiLibrary, 'Input')}
-          style={{ width: '100%', ...customStyles.input }}
-        />
+        {inlineLabels ? (
+          <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
+            {controlEl}
+          </UI.Box>
+        ) : (
+          <>
+            {labelEl}
+            {controlEl}
+          </>
+        )}
       </UI.Box>
     )
   }
 
   // Number field renderer
   const renderNumberField = (key, value, displayName) => {
-    return (
-      <UI.Box
-        key={key}
-        className={getUIClasses(uiLibrary, 'Box')}
-        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
-      >
+    const ctx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig: { type: 'number' },
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+    const labelEl =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.number === 'function' && customLabelRenderers.number(ctx)) || (
         <UI.Label
           className={getUIClasses(uiLibrary, 'Label')}
-          style={{
-            display: 'block',
-            fontWeight: '600',
-            marginBottom: '0.5rem',
-            ...customStyles.fieldLabel,
-          }}
+          style={{ display: 'block', fontWeight: '600', marginBottom: inlineLabels ? 0 : '0.5rem', ...customStyles.fieldLabel }}
         >
           {displayName}
         </UI.Label>
+      )
+    const controlEl =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.number === 'function' && customControlRenderers.number(ctx)) || (
         <UI.Input
           type="number"
           value={formData[key] || ''}
@@ -560,8 +698,26 @@ const Fields = ({
             handleFieldChange(key, val)
           }}
           className={getUIClasses(uiLibrary, 'Input')}
-          style={{ width: '100%', ...customStyles.input }}
+          style={{ [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%', ...customStyles.input }}
         />
+      )
+    return (
+      <UI.Box
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        {inlineLabels ? (
+          <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
+            {controlEl}
+          </UI.Box>
+        ) : (
+          <>
+            {labelEl}
+            {controlEl}
+          </>
+        )}
       </UI.Box>
     )
   }
@@ -858,30 +1014,54 @@ const Fields = ({
 
   // Text input field renderer (default)
   const renderTextInputField = (key, value, displayName) => {
+    const ctx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig: { type: 'text' },
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+    const labelEl =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.text === 'function' && customLabelRenderers.text(ctx)) || (
+        <UI.Label
+          className={getUIClasses(uiLibrary, 'Label')}
+          style={{ display: 'block', fontWeight: '600', marginBottom: inlineLabels ? 0 : '0.5rem', ...customStyles.fieldLabel }}
+        >
+          {displayName}
+        </UI.Label>
+      )
+    const controlEl =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.text === 'function' && customControlRenderers.text(ctx)) || (
+        <UI.Input
+          type="text"
+          value={formData[key] || ''}
+          onChange={(e) => handleFieldChange(key, e.target.value)}
+          className={getUIClasses(uiLibrary, 'Input')}
+          style={{ [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%', ...customStyles.input }}
+        />
+      )
     return (
       <UI.Box
         key={key}
         className={getUIClasses(uiLibrary, 'Box')}
         style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
       >
-        <UI.Label
-          className={getUIClasses(uiLibrary, 'Label')}
-          style={{
-            display: 'block',
-            fontWeight: '600',
-            marginBottom: '0.5rem',
-            ...customStyles.fieldLabel,
-          }}
-        >
-          {displayName}
-        </UI.Label>
-        <UI.Input
-          type="text"
-          value={formData[key] || ''}
-          onChange={(e) => handleFieldChange(key, e.target.value)}
-          className={getUIClasses(uiLibrary, 'Input')}
-          style={{ width: '100%', ...customStyles.input }}
-        />
+        {inlineLabels ? (
+          <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
+            {controlEl}
+          </UI.Box>
+        ) : (
+          <>
+            {labelEl}
+            {controlEl}
+          </>
+        )}
       </UI.Box>
     )
   }

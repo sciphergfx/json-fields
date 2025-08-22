@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
 import { Box, Container } from '@chakra-ui/react'
-import { setStorageItem, STORAGE_KEYS } from './utils/storage'
-import { getPalette } from './theme/palette'
+import { useEffect, useState } from 'react'
 import DemoHeader from './components/DemoHeader'
 import EditorsPanel from './components/EditorsPanel'
 import PreviewPanel from './components/PreviewPanel'
 import { FIELD_CONFIG_DEFAULT, sampleFieldConfig, sampleFormDataRich } from './constants/demoData'
+import { getPalette } from './theme/palette'
+import { setStorageItem, STORAGE_KEYS } from './utils/storage'
 
 function App() {
   // State
@@ -20,6 +20,7 @@ function App() {
   const [bundleStats] = useState(null)
   const [forks, setForks] = useState(null)
   const [uiLibrary, setUiLibrary] = useState('chakra')
+  const [inlineLabels] = useState(false)
 
   // Theme palette
   const palette = getPalette(theme)
@@ -76,10 +77,24 @@ function App() {
 
   return (
     <div style={{ minHeight: '100vh', background: palette.background }}>
-      <DemoHeader theme={theme} setTheme={setTheme} palette={palette} repoOwner={REPO_OWNER} repoName={REPO_NAME} forks={forks} uiLibrary={uiLibrary} setUiLibrary={setUiLibrary} />
+      <DemoHeader
+        theme={theme}
+        setTheme={setTheme}
+        palette={palette}
+        repoOwner={REPO_OWNER}
+        repoName={REPO_NAME}
+        forks={forks}
+        uiLibrary={uiLibrary}
+        setUiLibrary={setUiLibrary}
+      />
 
       <Container maxW="8xl" py={6}>
-        <Box bg={palette.panel} borderRadius="8px" border={`1px solid ${palette.border}`} overflow="hidden">
+        <Box
+          bg={palette.panel}
+          borderRadius="8px"
+          border={`1px solid ${palette.border}`}
+          overflow="hidden"
+        >
           <Box display="flex" gap="0" minH="70vh">
             <EditorsPanel
               theme={theme}
@@ -91,21 +106,21 @@ function App() {
               setFieldConfigValue={setFieldConfigValue}
               fieldConfigError={fieldConfigError}
               activeViewKind={activeViewKind}
-            /> <PreviewPanel
-          palette={palette}
-          theme={theme}
-          parsedJson={parsedJson}
-          jsonError={jsonError}
-          bundleStats={bundleStats}
-          editorValue={editorValue}
-          parsedFieldConfig={parsedFieldConfig}
-          uiLibrary={uiLibrary}
-        /> 
+            />
+            <PreviewPanel
+              palette={palette}
+              theme={theme}
+              parsedJson={parsedJson}
+              jsonError={jsonError}
+              bundleStats={bundleStats}
+              editorValue={editorValue}
+              parsedFieldConfig={parsedFieldConfig}
+              uiLibrary={uiLibrary}
+              inlineLabels={inlineLabels}
+            />
           </Box>
-        </Box>  
+        </Box>
       </Container>
- 
-     
     </div>
   )
 }

@@ -11,7 +11,17 @@ export const sampleFieldConfig = {
   rating: { type: 'slider', min: 0, max: 100, step: 1 },
   skills: {
     type: 'multi-select',
-    options: ['React', 'Vue', 'Angular', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 'Java', 'C++'],
+    options: [
+      'React',
+      'Vue',
+      'Angular',
+      'JavaScript',
+      'TypeScript',
+      'Node.js',
+      'Python',
+      'Java',
+      'C++',
+    ],
   },
   tags: { type: 'tags' },
   body: { type: 'key-value-list', showHeader: false },
@@ -34,10 +44,12 @@ export const sampleFormDataRich = JSON.stringify(
     rating: 75,
     skills: ['React', 'Node.js'],
     tags: ['alpha', 'beta', 'gamma'],
-    body: [{
-      mykey: 'key',
-      myvalue: 'value',
-    }],
+    body: [
+      {
+        mykey: 'key',
+        myvalue: 'value',
+      },
+    ],
     headers: {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ...',

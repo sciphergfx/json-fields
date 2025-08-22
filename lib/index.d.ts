@@ -11,8 +11,26 @@ export interface FieldsProps {
   customStyles?: Record<string, React.CSSProperties>
   showControls?: boolean
   showJsonInput?: boolean
+  inlineLabels?: boolean
   columns?: number
+  // Primitive headless renderer overrides (Container, Box, Input, etc.)
+  renderers?: Record<string, React.ElementType>
+  // Per-field override: key -> renderer
+  customFieldRenderers?: Record<string, (ctx: RendererContext) => React.ReactNode>
+  // Per-type override: type -> renderer (e.g., 'text', 'select')
+  customInputRenderers?: Record<string, (ctx: RendererContext) => React.ReactNode>
   [key: string]: any
+}
+
+export interface RendererContext {
+  key: string
+  value: any
+  displayName: string
+  fieldTypeConfig: Record<string, any>
+  formData: Record<string, any>
+  onChange: (value: any) => void
+  UI: Record<string, React.ElementType>
+  props: FieldsProps
 }
 
 // Component exports
