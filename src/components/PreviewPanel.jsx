@@ -206,6 +206,36 @@ export default function PreviewPanel({
         style={{ width: '100%', borderRadius: 8, padding: '8px 10px' }}
       />
     ),
+
+    // Per-type: custom segmented control look
+    segment: ({ UI, value, onChange, fieldTypeConfig }) => {
+      const options = Array.isArray(fieldTypeConfig?.options) ? fieldTypeConfig.options : []
+      return (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {options.map((opt) => {
+            const active = String(opt) === String(value ?? '')
+            return (
+              <UI.Button
+                key={`seg-${String(opt)}`}
+                type="button"
+                aria-pressed={active}
+                onClick={() => onChange(opt)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 6,
+                  border: `1px solid ${active ? palette.accent || '#6366f1' : palette.border}`,
+                  background: active ? (palette.muted || '#eef2ff') : (palette.panel || 'white'),
+                  color: active ? (palette.accentText || '#3730a3') : 'inherit',
+                  fontSize: 12,
+                }}
+              >
+                {String(opt)}
+              </UI.Button>
+            )
+          })}
+        </div>
+      )
+    },
   }
 
   return (

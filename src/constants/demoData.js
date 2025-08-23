@@ -47,18 +47,19 @@ export const sectionsConfig = [
 // Demo data and defaults for JsonFields demo
 
 export const sampleFieldConfig = {
-  email: { type: 'email' },
-  website: { type: 'url' },
-  joinDate: { type: 'date' },
-  password: { type: 'password' },
-  avatarUrl: { type: 'file', label: 'Avatar' },
-  profilePhoto: { type: 'file', label: 'Profile Photo' },
-  coverImg: { type: 'file', label: 'Cover Image' },
-  galleryUrls: { type: 'files', label: 'Gallery' },
-  role: { type: 'select', options: ['developer', 'designer', 'manager', 'analyst', 'intern'] },
-  age: { type: 'number', min: 0, max: 120, step: 1 },
-  salary: { type: 'number', min: 0, step: 1000 },
-  rating: { type: 'slider', min: 0, max: 100, step: 1 },
+  email: { type: 'email',  },
+  website: { type: 'url', description: 'Personal or company website URL.', descriptionPlacement: 'input' },
+  joinDate: { type: 'date', description: 'Date you joined the organization.' },
+  password: { type: 'password', description: 'Use a strong password with 8+ characters.', descriptionPlacement: 'input' },
+  avatarUrl: { type: 'file', label: 'Avatar', description: 'Upload a square image for best results.' },
+  profilePhoto: { type: 'file', label: 'Profile Photo', description: 'Your main profile image.' },
+  coverImg: { type: 'file', label: 'Cover Image', description: 'Large banner shown on your profile.' },
+  galleryUrls: { type: 'files', label: 'Gallery', description: 'Drag and drop multiple images.' },
+  role: { type: 'select', options: ['developer', 'designer', 'manager', 'analyst', 'intern'], description: 'Choose your primary role.' },
+  age: { type: 'number', min: 0, max: 120, step: 1, description: 'Enter your age in years.', descriptionPlacement: 'input' },
+  salary: { type: 'number', min: 0, step: 1000, description: 'Annual compensation (USD).' },
+  rating: { type: 'slider', min: 0, max: 100, step: 1, description: 'Self-assessed proficiency score.', descriptionPlacement: 'input' },
+  'preferences.theme': { type: 'segment', options: ['light', 'dark', 'system'], description: 'Theme preference.' },
   skills: {
     type: 'multi-select',
     options: [
@@ -73,10 +74,10 @@ export const sampleFieldConfig = {
       'C++',
     ],
   },
-  tags: { type: 'tags' },
-  body: { type: 'key-value-list', showHeader: false },
-  headers: { type: 'object' },
-  bio: { type: 'textarea', rows: 3 },
+  tags: { type: 'tags', description: 'Keywords to categorize your profile.', descriptionPlacement: 'label' },
+  body: { type: 'key-value-list', showHeader: false, description: 'Flexible key/value pairs.' },
+  headers: { type: 'object', description: 'HTTP headers for API requests.', descriptionPlacement: 'label' },
+  bio: { type: 'textarea', rows: 3, description: 'A short introduction about yourself.', descriptionPlacement: 'input' },
 }
 
 export const FIELD_CONFIG_DEFAULT = JSON.stringify(sampleFieldConfig, null, 2)
@@ -109,7 +110,7 @@ export const sampleFormDataRich = JSON.stringify(
       Authorization: 'Bearer ...',
     },
     bio: 'UX-focused designer and frontend developer.',
-    preferences: { theme: 'dark', notifications: true },
+    preferences: { theme: 'light', notifications: true },
     isActive: true,
   },
   null,

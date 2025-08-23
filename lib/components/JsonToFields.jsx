@@ -154,6 +154,12 @@ const Fields = ({
       padding: '3px 0px',
     }
 
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginBottom: '0.5rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -171,6 +177,7 @@ const Fields = ({
         >
           {displayName}
         </UI.Label>
+        {placement === 'label' ? descEl : null}
 
         {/* Header row (optional) */}
         {fieldTypeConfig.showHeader !== false && (
@@ -215,12 +222,116 @@ const Fields = ({
             + Add {displayName}
           </UI.Button>
         </UI.VStack>
+        {placement === 'input' ? descEl : null}
+      </UI.Box>
+    )
+  }
+
+  // Segment field renderer (segmented control)
+  const renderSegmentField = (key, value, displayName, fieldTypeConfig) => {
+    const options = Array.isArray(fieldTypeConfig.options) ? fieldTypeConfig.options : []
+    const current = (formData[key] ?? value ?? fieldTypeConfig.default ?? options[0]) || ''
+
+    const ctx = {
+      key,
+      value: current,
+      displayName,
+      fieldTypeConfig,
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+
+    const labelEl =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.segment === 'function' && customLabelRenderers.segment(ctx)) || (
+        <UI.Label className={getUIClasses(uiLibrary, 'Label')} style={{ ...customStyles.fieldLabel, marginBottom: inlineLabels ? 0 : '0.5rem' }}>
+          {displayName}
+        </UI.Label>
+      )
+
+    const controlDefault = (
+      <UI.HStack className={getUIClasses(uiLibrary, 'HStack')} style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+        {options.map((opt) => {
+          const isActive = String(opt) === String(current)
+          const content =
+            typeof fieldTypeConfig.optionRenderer === 'function'
+              ? fieldTypeConfig.optionRenderer({ option: opt, isActive, ...ctx })
+              : String(opt)
+          return (
+            <UI.Button
+              key={`${key}-${String(opt)}`}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => handleFieldChange(key, opt)}
+              className={getUIClasses(uiLibrary, 'Button', isActive ? 'default' : 'secondary')}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '999px',
+                border: isActive ? '1px solid #6366f1' : '1px solid #e5e7eb',
+                background: isActive ? '#eef2ff' : 'white',
+                color: isActive ? '#3730a3' : 'inherit',
+                ...customStyles.button,
+              }}
+            >
+              {content}
+            </UI.Button>
+          )
+        })}
+      </UI.HStack>
+    )
+
+    const controlEl =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.segment === 'function' && customControlRenderers.segment(ctx)) ||
+      controlDefault
+
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
+
+    return (
+      <UI.Box
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        {inlineLabels ? (
+          <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
+            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              {controlEl}
+              {descEl}
+            </UI.Box>
+          </UI.Box>
+        ) : (
+          <>
+            {labelEl}
+            {placement === 'label' ? descEl : null}
+            {controlEl}
+            {placement === 'input' ? descEl : null}
+          </>
+        )}
       </UI.Box>
     )
   }
 
   // Use adapter class mapping for tailwind/shadcn; Chakra returns empty string
   const getUIClasses = (lib, component, variant) => _getUIClasses(lib, component, variant)
+
+  // Helper: resolve description text and placement for a field
+  // placement: 'label' (default) or 'input'
+  const getDescriptionMeta = (key, fieldTypeConfig = {}) => {
+    const cfg = fieldConfig?.[key] || {}
+    const description = fieldTypeConfig.description ?? cfg.description
+    const placementRaw = fieldTypeConfig.descriptionPlacement ?? cfg.descriptionPlacement
+    const placement = placementRaw === 'input' ? 'input' : 'label'
+    return { description, placement }
+  }
 
   const parseJson = useCallback(
     (jsonString = jsonInput) => {
@@ -336,6 +447,8 @@ const Fields = ({
         return renderCheckboxField(key, value, displayName, fieldTypeConfig)
       case 'select':
         return renderSelectField(key, value, displayName, fieldTypeConfig)
+      case 'segment':
+        return renderSegmentField(key, value, displayName, fieldTypeConfig)
       case 'multi-select':
         return renderMultiSelectField(key, value, displayName, fieldTypeConfig)
       case 'textarea':
@@ -369,6 +482,12 @@ const Fields = ({
     const step = fieldTypeConfig.step ?? 1
     const current = typeof formData[key] === 'number' ? formData[key] : (fieldTypeConfig.default ?? min)
 
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem', marginBottom: placement === 'label' ? '0.5rem' : 0 }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -380,6 +499,7 @@ const Fields = ({
             {displayName}
           </UI.Text>
         </UI.Label>
+        {placement === 'label' ? descEl : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <input
             type="range"
@@ -395,6 +515,7 @@ const Fields = ({
             {current}
           </UI.Text>
         </div>
+        {placement === 'input' ? descEl : null}
       </UI.Box>
     )
   }
@@ -434,12 +555,19 @@ const Fields = ({
         />
       )
 
+    const { description, placement } = getDescriptionMeta(key, { type: 'checkbox', ...fieldConfig?.[key] })
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '4px' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
         className={getUIClasses(uiLibrary, 'Box')}
         style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
       >
+        {placement === 'label' ? descEl : null}
         <UI.Label
           className={getUIClasses(uiLibrary, 'Label')}
           style={{
@@ -453,6 +581,7 @@ const Fields = ({
           {controlNode}
           {labelNode}
         </UI.Label>
+        {placement === 'input' ? descEl : null}
       </UI.Box>
     )
   }
@@ -493,6 +622,12 @@ const Fields = ({
           ))}
         </UI.Select>
       )
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -502,12 +637,17 @@ const Fields = ({
         {inlineLabels ? (
           <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
-            {controlEl}
+            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              {controlEl}
+              {descEl}
+            </UI.Box>
           </UI.Box>
         ) : (
           <>
             {labelEl}
+            {placement === 'label' ? descEl : null}
             {controlEl}
+            {placement === 'input' ? descEl : null}
           </>
         )}
       </UI.Box>
@@ -517,6 +657,12 @@ const Fields = ({
   // Multi-select field renderer
   const renderMultiSelectField = (key, value, displayName, fieldTypeConfig) => {
     const selectedValues = Array.isArray(formData[key]) ? formData[key] : []
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem', marginBottom: placement === 'label' ? '0.5rem' : 0 }}>
+        {description}
+      </UI.Text>
+    ) : null
 
     return (
       <UI.Box
@@ -535,6 +681,7 @@ const Fields = ({
         >
           {displayName}
         </UI.Label>
+        {placement === 'label' ? descEl : null}
         <UI.Box style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {fieldTypeConfig.options?.map((option) => (
             <UI.Label
@@ -556,6 +703,7 @@ const Fields = ({
             </UI.Label>
           ))}
         </UI.Box>
+        {placement === 'input' ? descEl : null}
       </UI.Box>
     )
   }
@@ -593,6 +741,12 @@ const Fields = ({
           }}
         />
       )
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -602,12 +756,17 @@ const Fields = ({
         {inlineLabels ? (
           <UI.Box style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
             <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
-            {controlEl}
+            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              {controlEl}
+              {descEl}
+            </UI.Box>
           </UI.Box>
         ) : (
           <>
             {labelEl}
+            {placement === 'label' ? descEl : null}
             {controlEl}
+            {placement === 'input' ? descEl : null}
           </>
         )}
       </UI.Box>
@@ -644,6 +803,11 @@ const Fields = ({
           style={{ [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%', ...customStyles.input }}
         />
       )
+    const descEl = fieldTypeConfig.description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: inlineLabels ? '0.25rem' : '0.25rem', marginBottom: inlineLabels ? 0 : '0.25rem' }}>
+        {fieldTypeConfig.description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -653,11 +817,15 @@ const Fields = ({
         {inlineLabels ? (
           <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
-            {controlEl}
+            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              {controlEl}
+              {descEl}
+            </UI.Box>
           </UI.Box>
         ) : (
           <>
             {labelEl}
+            {descEl}
             {controlEl}
           </>
         )}
@@ -701,6 +869,12 @@ const Fields = ({
           style={{ [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%', ...customStyles.input }}
         />
       )
+    const { description, placement } = getDescriptionMeta(key, { type: 'number', ...fieldConfig?.[key] })
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -710,12 +884,17 @@ const Fields = ({
         {inlineLabels ? (
           <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
-            {controlEl}
+            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              {controlEl}
+              {descEl}
+            </UI.Box>
           </UI.Box>
         ) : (
           <>
             {labelEl}
+            {placement === 'label' ? descEl : null}
             {controlEl}
+            {placement === 'input' ? descEl : null}
           </>
         )}
       </UI.Box>
@@ -777,6 +956,12 @@ const Fields = ({
         lineHeight: 1,
       }
 
+      const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+      const descEl = description ? (
+        <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginBottom: '0.5rem' }}>
+          {description}
+        </UI.Text>
+      ) : null
       return (
         <UI.Box
           key={key}
@@ -794,6 +979,7 @@ const Fields = ({
           >
             {displayName}
           </UI.Label>
+          {placement === 'label' ? descEl : null}
           <UI.Box style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
             {tags.map((tag) => (
               <span key={tag} style={pillStyle}>
@@ -824,11 +1010,18 @@ const Fields = ({
               Add
             </UI.Button>
           </UI.Box>
+          {placement === 'input' ? descEl : null}
         </UI.Box>
       )
     }
 
     // Fallback: render as JSON textarea for non-string arrays
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginBottom: '0.5rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -846,6 +1039,7 @@ const Fields = ({
         >
           {displayName} (Array)
         </UI.Label>
+        {placement === 'label' ? descEl : null}
         <UI.Textarea
           value={JSON.stringify(value, null, 2)}
           onChange={(e) => {
@@ -864,6 +1058,7 @@ const Fields = ({
             ...customStyles.textarea,
           }}
         />
+        {placement === 'input' ? descEl : null}
       </UI.Box>
     )
   }
@@ -919,6 +1114,12 @@ const Fields = ({
       lineHeight: 1,
     }
 
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginBottom: '0.5rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -936,6 +1137,7 @@ const Fields = ({
         >
           {displayName}
         </UI.Label>
+        {placement === 'label' ? descEl : null}
         <UI.Box style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
           {tags.map((tag) => (
             <span key={tag} style={pillStyle}>
@@ -966,12 +1168,19 @@ const Fields = ({
             Add
           </UI.Button>
         </UI.Box>
+        {placement === 'input' ? descEl : null}
       </UI.Box>
     )
   }
 
   // Object field renderer
   const renderObjectField = (key, value, displayName) => {
+    const { description, placement } = getDescriptionMeta(key, fieldConfig?.[key] || { type: 'object' })
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginBottom: '0.5rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -989,6 +1198,7 @@ const Fields = ({
         >
           {displayName} (Object)
         </UI.Label>
+        {placement === 'label' ? descEl : null}
         <UI.Textarea
           value={JSON.stringify(value, null, 2)}
           onChange={(e) => {
@@ -1008,6 +1218,7 @@ const Fields = ({
             ...customStyles.textarea,
           }}
         />
+        {placement === 'input' ? descEl : null}
       </UI.Box>
     )
   }
@@ -1045,6 +1256,12 @@ const Fields = ({
           style={{ [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%', ...customStyles.input }}
         />
       )
+    const { description, placement } = getDescriptionMeta(key, { type: 'text', ...fieldConfig?.[key] })
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
     return (
       <UI.Box
         key={key}
@@ -1054,12 +1271,17 @@ const Fields = ({
         {inlineLabels ? (
           <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
-            {controlEl}
+            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              {controlEl}
+              {descEl}
+            </UI.Box>
           </UI.Box>
         ) : (
           <>
             {labelEl}
+            {placement === 'label' ? descEl : null}
             {controlEl}
+            {placement === 'input' ? descEl : null}
           </>
         )}
       </UI.Box>
