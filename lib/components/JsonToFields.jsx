@@ -321,13 +321,13 @@ const Fields = ({
     // 1) Per-field override takes precedence
     const fieldOverride = customFieldRenderers?.[key]
     if (typeof fieldOverride === 'function') {
-      return fieldOverride(rendererCtx)
+      return <React.Fragment key={key}>{fieldOverride(rendererCtx)}</React.Fragment>
     }
 
     // 2) Per-type override next
     const typeOverride = customInputRenderers?.[fieldTypeConfig.type]
     if (typeof typeOverride === 'function') {
-      return typeOverride(rendererCtx)
+      return <React.Fragment key={key}>{typeOverride(rendererCtx)}</React.Fragment>
     }
 
     // Handle different field types based on configuration

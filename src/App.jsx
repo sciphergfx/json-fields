@@ -3,13 +3,17 @@ import { useEffect, useState } from 'react'
 import DemoHeader from './components/DemoHeader'
 import EditorsPanel from './components/EditorsPanel'
 import PreviewPanel from './components/PreviewPanel'
-import { FIELD_CONFIG_DEFAULT, sampleFieldConfig, sampleFormDataRich } from './constants/demoData'
+import {
+  FIELD_CONFIG_DEFAULT,
+  sectionsConfig,
+  sampleFieldConfig,
+  sampleFormDataRich,
+} from './constants/demoData'
 import { getPalette } from './theme/palette'
 import { setStorageItem, STORAGE_KEYS } from './utils/storage'
 
 function App() {
-  // State
-  const [theme, setTheme] = useState('dark')
+  const [theme, setTheme] = useState('light')
   const [editorValue, setEditorValue] = useState(sampleFormDataRich)
   const [parsedJson, setParsedJson] = useState(null)
   const [jsonError, setJsonError] = useState(null)
@@ -22,10 +26,8 @@ function App() {
   const [uiLibrary, setUiLibrary] = useState('chakra')
   const [inlineLabels] = useState(false)
 
-  // Theme palette
   const palette = getPalette(theme)
 
-  // GitHub repo stats (from env, with defaults)
   const REPO_OWNER = import.meta.env.VITE_GITHUB_REPO_OWNER || 'sciphergfx'
   const REPO_NAME = import.meta.env.VITE_GITHUB_REPO_NAME || 'json-fields'
 
@@ -36,16 +38,17 @@ function App() {
       .then((data) => {
         if (data && typeof data.forks_count === 'number') setForks(data.forks_count)
       })
-      .catch(() => {})
+      .catch(() => {
+        // Intentionally ignore errors in demo stats fetch
+        // console.debug('Repo stats fetch skipped')
+      })
     return () => controller.abort()
   }, [REPO_OWNER, REPO_NAME])
 
-  // Persist last active tab key (legacy compatibility)
   useEffect(() => {
     setStorageItem(STORAGE_KEYS.TAB_PREFERENCE, 'playground')
   }, [])
 
-  // Parse editor JSON
   useEffect(() => {
     const h = setTimeout(() => {
       try {
@@ -60,7 +63,6 @@ function App() {
     return () => clearTimeout(h)
   }, [editorValue])
 
-  // Parse field config JSON
   useEffect(() => {
     const h = setTimeout(() => {
       try {
@@ -112,6 +114,7 @@ function App() {
               theme={theme}
               parsedJson={parsedJson}
               jsonError={jsonError}
+              sectionsConfig={sectionsConfig}
               bundleStats={bundleStats}
               editorValue={editorValue}
               parsedFieldConfig={parsedFieldConfig}
