@@ -3,7 +3,7 @@
  * Provides safe access to localStorage with fallback
  */
 
-const STORAGE_PREFIX = 'json_tools_';
+const STORAGE_PREFIX = 'json_tools_'
 
 /**
  * Check if localStorage is available
@@ -11,14 +11,14 @@ const STORAGE_PREFIX = 'json_tools_';
  */
 export const isStorageAvailable = () => {
   try {
-    const test = '__storage_test__';
-    localStorage.setItem(test, test);
-    localStorage.removeItem(test);
-    return true;
+    const test = '__storage_test__'
+    localStorage.setItem(test, test)
+    localStorage.removeItem(test)
+    return true
   } catch {
-    return false;
+    return false
   }
-};
+}
 
 /**
  * Get item from localStorage
@@ -28,17 +28,17 @@ export const isStorageAvailable = () => {
  */
 export const getStorageItem = (key, defaultValue = null) => {
   if (!isStorageAvailable()) {
-    return defaultValue;
+    return defaultValue
   }
 
   try {
-    const item = localStorage.getItem(STORAGE_PREFIX + key);
-    return item ? JSON.parse(item) : defaultValue;
+    const item = localStorage.getItem(STORAGE_PREFIX + key)
+    return item ? JSON.parse(item) : defaultValue
   } catch (error) {
-    console.error('Error reading from localStorage:', error);
-    return defaultValue;
+    console.error('Error reading from localStorage:', error)
+    return defaultValue
   }
-};
+}
 
 /**
  * Set item in localStorage
@@ -48,17 +48,17 @@ export const getStorageItem = (key, defaultValue = null) => {
  */
 export const setStorageItem = (key, value) => {
   if (!isStorageAvailable()) {
-    return false;
+    return false
   }
 
   try {
-    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
-    return true;
+    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value))
+    return true
   } catch (error) {
-    console.error('Error writing to localStorage:', error);
-    return false;
+    console.error('Error writing to localStorage:', error)
+    return false
   }
-};
+}
 
 /**
  * Remove item from localStorage
@@ -67,17 +67,17 @@ export const setStorageItem = (key, value) => {
  */
 export const removeStorageItem = (key) => {
   if (!isStorageAvailable()) {
-    return false;
+    return false
   }
 
   try {
-    localStorage.removeItem(STORAGE_PREFIX + key);
-    return true;
+    localStorage.removeItem(STORAGE_PREFIX + key)
+    return true
   } catch (error) {
-    console.error('Error removing from localStorage:', error);
-    return false;
+    console.error('Error removing from localStorage:', error)
+    return false
   }
-};
+}
 
 /**
  * Clear all items with our prefix from localStorage
@@ -85,22 +85,22 @@ export const removeStorageItem = (key) => {
  */
 export const clearStorage = () => {
   if (!isStorageAvailable()) {
-    return false;
+    return false
   }
 
   try {
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
+    const keys = Object.keys(localStorage)
+    keys.forEach((key) => {
       if (key.startsWith(STORAGE_PREFIX)) {
-        localStorage.removeItem(key);
+        localStorage.removeItem(key)
       }
-    });
-    return true;
+    })
+    return true
   } catch (error) {
-    console.error('Error clearing localStorage:', error);
-    return false;
+    console.error('Error clearing localStorage:', error)
+    return false
   }
-};
+}
 
 /**
  * Get storage size for our app
@@ -108,22 +108,22 @@ export const clearStorage = () => {
  */
 export const getStorageSize = () => {
   if (!isStorageAvailable()) {
-    return 0;
+    return 0
   }
 
-  let size = 0;
+  let size = 0
   try {
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
+    const keys = Object.keys(localStorage)
+    keys.forEach((key) => {
       if (key.startsWith(STORAGE_PREFIX)) {
-        size += localStorage.getItem(key).length + key.length;
+        size += localStorage.getItem(key).length + key.length
       }
-    });
+    })
   } catch (error) {
-    console.error('Error calculating storage size:', error);
+    console.error('Error calculating storage size:', error)
   }
-  return size;
-};
+  return size
+}
 
 // Storage keys constants
 export const STORAGE_KEYS = {
@@ -132,4 +132,4 @@ export const STORAGE_KEYS = {
   RECENT_CONVERSIONS: 'recent_conversions',
   THEME_MODE: 'theme_mode',
   TAB_PREFERENCE: 'tab_preference',
-};
+}

@@ -1,50 +1,40 @@
-import React from 'react';
-import {
-  Box,
-  Button,
-  Textarea,
-  VStack,
-  HStack,
-  Heading,
-  Alert,
-  Text,
-} from '@chakra-ui/react';
-import { SAMPLE_JSON } from '../constants/sampleData';
-import { formatJson } from '../utils/jsonUtils';
+import React from 'react'
+import { Box, Button, Textarea, VStack, HStack, Heading, Alert, Text } from '@chakra-ui/react'
+import { SAMPLE_JSON } from '../constants/sampleData'
+import { formatJson } from '../utils/jsonUtils'
 
 /**
  * JsonInput Component
  * Handles JSON input, validation, and sample data loading
  */
 const JsonInput = ({ jsonInput, setJsonInput, onParse, error }) => {
-  
   // Load sample data
   const loadSample = (sampleKey) => {
     if (sampleKey && typeof sampleKey === 'string' && SAMPLE_JSON[sampleKey]) {
-      const sampleData = SAMPLE_JSON[sampleKey].data;
-      setJsonInput(formatJson(sampleData));
+      const sampleData = SAMPLE_JSON[sampleKey].data
+      setJsonInput(formatJson(sampleData))
     }
-  };
+  }
 
   // Prettify JSON
   const prettifyJson = () => {
     try {
-      const parsed = JSON.parse(jsonInput);
-      setJsonInput(formatJson(parsed));
+      const parsed = JSON.parse(jsonInput)
+      setJsonInput(formatJson(parsed))
     } catch {
       // If parsing fails, don't change the input
     }
-  };
+  }
 
   // Clear input
   const clearInput = () => {
-    setJsonInput('');
-  };
+    setJsonInput('')
+  }
 
   return (
     <VStack align="stretch" gap={4}>
       <Heading size="lg">JSON Input</Heading>
-      
+
       {/* Sample Data Selector */}
       <Box>
         <Text fontSize="sm" mb={2} color="fg.muted">
@@ -60,11 +50,13 @@ const JsonInput = ({ jsonInput, setJsonInput, onParse, error }) => {
               border: '1px solid #e2e8f0',
               backgroundColor: 'white',
               fontSize: '14px',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
             defaultValue=""
           >
-            <option value="" disabled>Choose a sample...</option>
+            <option value="" disabled>
+              Choose a sample...
+            </option>
             <option value="simple">Simple Object</option>
             <option value="nested">Nested Object</option>
             <option value="complex">Complex Data</option>
@@ -87,24 +79,13 @@ const JsonInput = ({ jsonInput, setJsonInput, onParse, error }) => {
 
       {/* Action Buttons */}
       <HStack gap={2}>
-        <Button 
-          onClick={onParse} 
-          colorPalette="blue"
-          flex={1}
-        >
+        <Button onClick={onParse} colorPalette="blue" flex={1}>
           Generate Form Fields
         </Button>
-        <Button 
-          onClick={prettifyJson}
-          variant="outline"
-        >
+        <Button onClick={prettifyJson} variant="outline">
           Prettify
         </Button>
-        <Button 
-          onClick={clearInput}
-          variant="outline"
-          colorPalette="red"
-        >
+        <Button onClick={clearInput} variant="outline" colorPalette="red">
           Clear
         </Button>
       </HStack>
@@ -120,7 +101,7 @@ const JsonInput = ({ jsonInput, setJsonInput, onParse, error }) => {
         </Alert.Root>
       )}
     </VStack>
-  );
-};
+  )
+}
 
-export default JsonInput;
+export default JsonInput

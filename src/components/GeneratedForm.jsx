@@ -1,17 +1,7 @@
-import React from 'react';
-import {
-  Box,
-  VStack,
-  Heading,
-  Code,
-  Text,
-  Card,
-  Button,
-  HStack,
-  Badge,
-} from '@chakra-ui/react';
-import FormField from './FormField';
-import { unflattenObject, formatJson } from '../utils/jsonUtils';
+import React from 'react'
+import { Box, VStack, Heading, Code, Text, Card, Button, HStack, Badge } from '@chakra-ui/react'
+import FormField from './FormField'
+import { unflattenObject, formatJson } from '../utils/jsonUtils'
 
 /**
  * GeneratedForm Component
@@ -29,28 +19,28 @@ const GeneratedForm = ({ formData, onChange, parsedJson }) => {
           </VStack>
         </Card.Body>
       </Card.Root>
-    );
+    )
   }
 
-  const fieldCount = Object.keys(formData).length;
-  const nestedData = unflattenObject(formData);
+  const fieldCount = Object.keys(formData).length
+  const nestedData = unflattenObject(formData)
 
   // Export current form data as JSON
   const exportJson = () => {
-    const dataStr = formatJson(nestedData);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const exportFileDefaultName = 'form_data.json';
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  };
+    const dataStr = formatJson(nestedData)
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
+    const exportFileDefaultName = 'form_data.json'
+
+    const linkElement = document.createElement('a')
+    linkElement.setAttribute('href', dataUri)
+    linkElement.setAttribute('download', exportFileDefaultName)
+    linkElement.click()
+  }
 
   // Copy JSON to clipboard
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(formatJson(nestedData));
-  };
+    navigator.clipboard.writeText(formatJson(nestedData))
+  }
 
   return (
     <VStack align="stretch" gap={4}>
@@ -66,12 +56,7 @@ const GeneratedForm = ({ formData, onChange, parsedJson }) => {
         <Card.Body>
           <Box maxH="400px" overflowY="auto" pr={2}>
             {Object.entries(formData).map(([key, value]) => (
-              <FormField
-                key={key}
-                fieldKey={key}
-                value={value}
-                onChange={onChange}
-              />
+              <FormField key={key} fieldKey={key} value={value} onChange={onChange} />
             ))}
           </Box>
         </Card.Body>
@@ -83,19 +68,10 @@ const GeneratedForm = ({ formData, onChange, parsedJson }) => {
           <HStack justify="space-between">
             <Heading size="md">Current Values (JSON)</Heading>
             <HStack>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={copyToClipboard}
-              >
+              <Button size="sm" variant="outline" onClick={copyToClipboard}>
                 Copy JSON
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                colorPalette="blue"
-                onClick={exportJson}
-              >
+              <Button size="sm" variant="outline" colorPalette="blue" onClick={exportJson}>
                 Export JSON
               </Button>
             </HStack>
@@ -120,7 +96,7 @@ const GeneratedForm = ({ formData, onChange, parsedJson }) => {
         </Card.Body>
       </Card.Root>
     </VStack>
-  );
-};
+  )
+}
 
-export default GeneratedForm;
+export default GeneratedForm

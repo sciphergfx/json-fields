@@ -44,15 +44,14 @@ npx vercel --prod
 2. **Follow the prompts:**
 
    ```
-   ? Set up and deploy "~/apps/jsonToTable"? [Y/n] Y
+   ? Set up and deploy "~/apps/json-fields"? [Y/n] Y
    ? Which scope do you want to deploy to? Your-Username
    ? Link to existing project? [y/N] N
-   ? What's your project's name? json-to-table
+   ? What's your project's name? json-fields
    ? In which directory is your code located? ./
    ```
 
 3. **Vercel will:**
-
    - Auto-detect framework (Vite)
    - Install dependencies
    - Run build command
@@ -80,7 +79,6 @@ The project includes a `vercel.json` with:
 If you need environment variables:
 
 1. **Via Vercel Dashboard:**
-
    - Go to Project Settings → Environment Variables
    - Add your variables
    - Redeploy
@@ -102,7 +100,6 @@ If you need environment variables:
 ### Add a custom domain:
 
 1. **Via Dashboard:**
-
    - Go to Project Settings → Domains
    - Add your domain
    - Follow DNS configuration
@@ -243,7 +240,7 @@ vercel rollback [deployment-url]
 vercel alias [deployment-url] [alias]
 
 # Example
-vercel alias json-tools-abc123.vercel.app my-json-tools.vercel.app
+vercel alias json-fields-ten.vercel.app json-fields-ten.vercel.app
 
 # Remove alias
 vercel alias rm [alias]

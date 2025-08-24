@@ -1,6 +1,7 @@
 # Deployment Guide
 
 ## Table of Contents
+
 - [Prerequisites](#prerequisites)
 - [Environment Setup](#environment-setup)
 - [Build Process](#build-process)
@@ -22,7 +23,7 @@
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd jsonToTable
+cd json-fields
 
 # Install dependencies
 npm install
@@ -227,6 +228,7 @@ add_header Referrer-Policy "strict-origin-when-cross-origin";
 ### 4. Input Validation
 
 The application includes:
+
 - JSON size validation (5MB limit by default)
 - Input sanitization
 - Depth validation for nested objects
@@ -240,26 +242,24 @@ Integrate error tracking service:
 
 ```javascript
 // Example with Sentry
-import * as Sentry from "@sentry/react";
+import * as Sentry from '@sentry/react'
 
 Sentry.init({
   dsn: process.env.VITE_SENTRY_DSN,
   environment: process.env.VITE_APP_ENVIRONMENT,
-  integrations: [
-    new Sentry.BrowserTracing(),
-  ],
+  integrations: [new Sentry.BrowserTracing()],
   tracesSampleRate: 1.0,
-});
+})
 ```
 
 ### 2. Analytics
 
 ```javascript
 // Example with Google Analytics
-import ReactGA from 'react-ga4';
+import ReactGA from 'react-ga4'
 
 if (process.env.VITE_ENABLE_ANALYTICS === 'true') {
-  ReactGA.initialize(process.env.VITE_GA_MEASUREMENT_ID);
+  ReactGA.initialize(process.env.VITE_GA_MEASUREMENT_ID)
 }
 ```
 
@@ -298,7 +298,7 @@ For containerized deployments, add a health check:
 ## Post-Deployment Checklist
 
 - [ ] Verify all environment variables are set
-- [ ] Test both JSON to Table and JSON to Form features
+- [ ] Test JSON Fields (form) functionality
 - [ ] Check error handling works correctly
 - [ ] Verify localStorage functionality
 - [ ] Test on multiple browsers
@@ -330,6 +330,7 @@ For containerized deployments, add a health check:
 ## Support
 
 For issues or questions:
+
 - Check the [README](README.md)
 - Review error logs
 - Open an issue on GitHub

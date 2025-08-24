@@ -1,21 +1,36 @@
-# @sciphergfx/json-to-table
+# @sciphergfx/json-fields
 
-UI-agnostic React components for JSON to Table and JSON to Form Fields conversion with support for Chakra UI, Tailwind CSS, and shadcn/ui.
+[![npm version](https://img.shields.io/npm/v/@sciphergfx/json-fields.svg)](https://www.npmjs.com/package/@sciphergfx/json-fields)
+[![npm downloads](https://img.shields.io/npm/dm/@sciphergfx/json-fields.svg)](https://www.npmjs.com/package/@sciphergfx/json-fields)
+
+UI-agnostic React component for JSON → Form Fields, with support for Chakra UI, Tailwind CSS, and shadcn/ui.
 
 ## Features
 
 - 🎨 **UI Library Agnostic** - Works with Chakra UI, Tailwind CSS, shadcn/ui, or plain HTML
-- 📊 **JSON to Table** - Convert JSON arrays to editable tables
 - 📝 **JSON to Form Fields** - Generate form fields from JSON objects
 - 🔄 **Real-time Updates** - Get callbacks on field changes
 - 💾 **Save/Cancel Actions** - Built-in save and cancel functionality
 - 🎯 **TypeScript Support** - Full TypeScript definitions included
 - 📱 **Responsive** - Works on all screen sizes
+- 🧩 **Sections** - Group form fields into collapsible sections
+- 🏷️ **Array chips** - Arrays of strings render as pill chips with add/delete
+- 🌓 **Per-component light/dark** - Switch `mode` per component (works with Chakra)
+
+## Headless Core (Lightweight)
+
+This package now provides a headless core with no UI library dependency. You style via `classNames` and `styles`, or override primitives with `renderers`.
+
+- `classNames`: slot-to-class mapping, e.g. `{ container, heading, sectionHeader, fieldLabel, input, textarea, chip, chipClose, button, secondaryButton, list, row, icon, label }`.
+- `styles`: per-slot inline styles, same keys as `classNames`.
+- `renderers`: override primitives like `{ Container, Box, Button, Input, Select, Textarea, Text, Heading, VStack, HStack, Card, Alert, Label }`.
+
+Chakra/shadcn/Tailwind can be used externally by supplying classes or renderers. The previous `uiLibrary` prop is deprecated for the core path.
 
 ## Installation
 
 ```bash
-npm install @sciphergfx/json-to-table
+npm install @sciphergfx/json-fields
 ```
 
 ### Peer Dependencies
@@ -27,113 +42,117 @@ npm install react react-dom
 ### Optional UI Library Dependencies
 
 For Chakra UI support:
+
 ```bash
 npm install @chakra-ui/react @emotion/react
 ```
 
 ## Quick Start
 
-### JsonToTable Component
+### Fields Component
 
 ```jsx
-import { JsonToTable } from '@sciphergfx/json-to-table';
-
-const MyApp = () => {
-  const handleSave = (nestedData, flatData) => {
-    console.log('Saved data:', nestedData);
-  };
-
-  const handleFieldChange = (key, value, fullData) => {
-    console.log(`Field ${key} changed to:`, value);
-  };
-
-  return (
-    <JsonToTable
-      uiLibrary="tailwind" // "chakra" | "tailwind" | "shadcn"
-      onSave={handleSave}
-      onCancel={() => console.log('Cancelled')}
-      onFieldChange={handleFieldChange}
-      saveButtonText="Save Changes"
-      cancelButtonText="Reset Form"
-      initialJson={JSON.stringify([
-        { id: 1, name: "John", email: "john@example.com" },
-        { id: 2, name: "Jane", email: "jane@example.com" }
-      ])}
-    />
-  );
-};
-```
-
-### JsonToFields Component
-
-```jsx
-import { JsonToFields } from '@sciphergfx/json-to-table';
+import { Fields } from '@sciphergfx/json-fields'
 
 const MyForm = () => {
   const handleSave = (nestedData, flatData) => {
-    console.log('Form data:', nestedData);
-  };
+    console.log('Form data:', nestedData)
+  }
 
   return (
-    <JsonToFields
+    <Fields
       uiLibrary="shadcn"
+      // Group fields into collapsible sections (optional)
+      sections={[
+        {
+          id: 'profile',
+          title: 'Profile',
+          description: 'Basic info',
+          fields: ['name', 'email', 'website', 'role', 'joinDate'],
+          collapsible: true,
+          defaultOpen: true,
+        },
+        {
+          id: 'preferences',
+          title: 'Preferences',
+          fields: ['preferences.theme', 'preferences.notifications', 'isActive'],
+          collapsible: true,
+          defaultOpen: true,
+        },
+        {
+          id: 'security',
+          title: 'Security',
+          fields: ['password'],
+          collapsible: true,
+          defaultOpen: false,
+        },
+        {
+          id: 'about',
+          title: 'About',
+          fields: ['bio', 'skills', 'tags'],
+          collapsible: true,
+          defaultOpen: true,
+        },
+      ]}
+      includeUnsectioned
       onSave={handleSave}
       onCancel={() => console.log('Form cancelled')}
       onFieldChange={(key, value, fullData) => {
-        console.log(`Field ${key} changed:`, value);
+        console.log(`Field ${key} changed:`, value)
       }}
       initialJson={JSON.stringify({
         user: {
-          name: "John Doe",
-          email: "john@example.com",
+          name: 'John Doe',
+          email: 'john@example.com',
           preferences: {
-            theme: "dark",
-            notifications: true
-          }
-        }
+            theme: 'dark',
+            notifications: true,
+          },
+        },
+        skills: ['React', 'TypeScript'],
+        tags: ['dev', 'ui'], // Arrays of strings render as pill chips with add/delete
       })}
       showJsonInput={false} // Hide JSON input, show only form
     />
-  );
-};
+  )
+}
 ```
 
 ## API Reference
 
-### JsonToTable Props
+### Fields Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use for styling |
-| `onSave` | `(nestedData, flatData) => void` | - | Callback when save button is clicked |
-| `onCancel` | `() => void` | - | Callback when cancel button is clicked |
-| `onFieldChange` | `(key, value, fullData) => void` | - | Callback when any field changes |
-| `saveButtonText` | `string` | `'Save Changes'` | Text for the save button |
-| `cancelButtonText` | `string` | `'Reset Form'` | Text for the cancel button |
-| `initialJson` | `string` | `''` | Initial JSON string to load |
-| `customStyles` | `object` | `{}` | Custom styles object |
-| `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
+| Prop                 | Type                                                                                | Default          | Description                                          |
+| -------------------- | ----------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------- |
+| `uiLibrary`          | `'chakra' \| 'tailwind' \| 'shadcn'`                                                | `'chakra'`       | UI library to use for styling                        |
+| `onSave`             | `(nestedData, flatData) => void`                                                    | -                | Callback when save button is clicked                 |
+| `onCancel`           | `() => void`                                                                        | -                | Callback when cancel button is clicked               |
+| `onFieldChange`      | `(key, value, fullData) => void`                                                    | -                | Callback when any field changes                      |
+| `saveButtonText`     | `string`                                                                            | `'Save Changes'` | Text for the save button                             |
+| `cancelButtonText`   | `string`                                                                            | `'Reset Form'`   | Text for the cancel button                           |
+| `initialJson`        | `string`                                                                            | `''`             | Initial JSON string to load                          |
+| `customStyles`       | `object`                                                                            | `{}`             | Custom styles object                                 |
+| `showControls`       | `boolean`                                                                           | `true`           | Whether to show save/cancel buttons                  |
+| `showJsonInput`      | `boolean`                                                                           | `true`           | Whether to show JSON input textarea                  |
+| `sections`           | `Array<{ id?, title, description?, fields: string[], collapsible?, defaultOpen? }>` | `null`           | Group fields into sections                           |
+| `includeUnsectioned` | `boolean`                                                                           | `false`          | Show fields not in sections under an "Other" section |
+| `unsectionedTitle`   | `string`                                                                            | `'Other'`        | Title for unsectioned fields section                 |
 
-### JsonToFields Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `uiLibrary` | `'chakra' \| 'tailwind' \| 'shadcn'` | `'chakra'` | UI library to use for styling |
-| `onSave` | `(nestedData, flatData) => void` | - | Callback when save button is clicked |
-| `onCancel` | `() => void` | - | Callback when cancel button is clicked |
-| `onFieldChange` | `(key, value, fullData) => void` | - | Callback when any field changes |
-| `saveButtonText` | `string` | `'Save Changes'` | Text for the save button |
-| `cancelButtonText` | `string` | `'Reset Form'` | Text for the cancel button |
-| `initialJson` | `string` | `''` | Initial JSON string to load |
-| `customStyles` | `object` | `{}` | Custom styles object |
-| `showControls` | `boolean` | `true` | Whether to show save/cancel buttons |
-| `showJsonInput` | `boolean` | `true` | Whether to show JSON input textarea |
+<!-- List component has been removed; Fields is the sole component. -->
 
 ## Styling
 
 ### Tailwind CSS
 
-When using `uiLibrary="tailwind"`, the components will apply Tailwind classes. Make sure you have Tailwind CSS configured in your project.
+When using `uiLibrary="tailwind"`, the components output Tailwind utility classes. This package does not bundle Tailwind.
+
+Requirements:
+- Tailwind CSS configured in your app (tailwind.config.js, PostCSS, etc.).
+
+Quick setup:
+1) Install and configure Tailwind per official docs.
+2) Ensure your content globs include your app code using `<Fields />` so classes are not purged.
+3) Use `uiLibrary="tailwind"` in `<Fields />`.
 
 ### Chakra UI
 
@@ -141,18 +160,28 @@ When using `uiLibrary="chakra"`, the components will use Chakra UI components. M
 
 ### shadcn/ui
 
-When using `uiLibrary="shadcn"`, the components will apply shadcn/ui compatible classes.
+When using `uiLibrary="shadcn"`, the components output class names compatible with shadcn/ui. This package does not bundle shadcn/ui or Tailwind.
+
+Requirements:
+- Tailwind CSS configured in your app.
+- shadcn/ui installed (or compatible design tokens/variables like `bg-primary`, `text-muted-foreground`, etc.).
+
+Quick setup:
+1) Install Tailwind and shadcn/ui per their docs.
+2) Ensure your Tailwind theme exposes the tokens used by shadcn/ui.
+3) Use `uiLibrary="shadcn"` in `<Fields />`.
 
 ### Custom Styles
 
 You can override styles using the `customStyles` prop:
 
 ```jsx
-<JsonToTable
+<Fields
+  uiLibrary="tailwind"
   customStyles={{
     container: { maxWidth: '800px' },
-    table: { fontSize: '14px' },
-    button: { backgroundColor: '#007bff' }
+    input: { borderRadius: '8px' },
+    button: { backgroundColor: '#007bff' },
   }}
 />
 ```
@@ -162,23 +191,23 @@ You can override styles using the `customStyles` prop:
 The package also exports utility functions for working with JSON:
 
 ```jsx
-import { 
-  flattenObject, 
-  unflattenObject, 
+import {
+  flattenObject,
+  unflattenObject,
   parseJsonSafely,
-  getInputType 
-} from '@sciphergfx/json-to-table';
+  getInputType,
+} from '@sciphergfx/json-fields'
 
 // Flatten nested objects
-const flat = flattenObject({ user: { name: 'John' } });
+const flat = flattenObject({ user: { name: 'John' } })
 // Result: { 'user.name': 'John' }
 
 // Unflatten back to nested
-const nested = unflattenObject({ 'user.name': 'John' });
+const nested = unflattenObject({ 'user.name': 'John' })
 // Result: { user: { name: 'John' } }
 
 // Safe JSON parsing
-const result = parseJsonSafely('{"name": "John"}');
+const result = parseJsonSafely('{"name": "John"}')
 // Result: { success: true, data: { name: 'John' } }
 ```
 
@@ -187,11 +216,11 @@ const result = parseJsonSafely('{"name": "John"}');
 The package includes full TypeScript definitions:
 
 ```typescript
-import { JsonToTableProps, JsonToFieldsProps } from '@sciphergfx/json-to-table';
+import { FieldsProps } from '@sciphergfx/json-fields'
 
-const MyComponent: React.FC<JsonToTableProps> = (props) => {
+const MyComponent: React.FC<FieldsProps> = (props) => {
   // Your component logic
-};
+}
 ```
 
 ## Examples
@@ -199,30 +228,19 @@ const MyComponent: React.FC<JsonToTableProps> = (props) => {
 ### With Custom Styling
 
 ```jsx
-<JsonToFields
+<Fields
   uiLibrary="tailwind"
   customStyles={{
     container: { padding: '2rem' },
     formCard: { border: '2px solid #e2e8f0' },
     input: { borderRadius: '8px' },
-    button: { backgroundColor: '#3b82f6' }
+    button: { backgroundColor: '#3b82f6' },
   }}
   onSave={(data) => console.log('Saved:', data)}
 />
 ```
 
-### Headless Usage (No UI Library)
-
-```jsx
-<JsonToTable
-  uiLibrary="tailwind"
-  showControls={false}
-  onFieldChange={(key, value, data) => {
-    // Handle changes in your own way
-    updateMyState(data);
-  }}
-/>
-```
+<!-- Table/List components have been removed in this package. -->
 
 ## Author
 

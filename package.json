@@ -1,7 +1,7 @@
 {
-  "name": "@sciphergfx/json-to-table",
-  "version": "1.1.2",
-  "description": "UI-agnostic React components for JSON to Table and JSON to Form Fields conversion with support for Chakra UI, Tailwind CSS, and shadcn/ui",
+  "name": "@sciphergfx/json-fields",
+  "version": "1.1.5",
+  "description": "UI-agnostic React component for generating Form Fields from JSON with support for Chakra UI, Tailwind CSS, and shadcn/ui",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -13,25 +13,25 @@
   "type": "module",
   "keywords": [
     "json",
-    "table",
     "form",
+    "fields",
     "converter",
     "react",
     "chakra-ui",
     "tailwind",
     "shadcn",
-    "json-to-table",
+    "json-fields",
     "json-to-form",
     "ui-agnostic",
     "components"
   ],
-  "homepage": "https://github.com/sciphergfx/json-to-table",
+  "homepage": "https://github.com/sciphergfx/json-fields",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sciphergfx/json-to-table.git"
+    "url": "git+https://github.com/sciphergfx/json-fields.git"
   },
   "bugs": {
-    "url": "https://github.com/sciphergfx/json-to-table/issues"
+    "url": "https://github.com/sciphergfx/json-fields/issues"
   },
   "engines": {
     "node": ">=20.12.0",
@@ -40,11 +40,14 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run build:lib",
+    "build:stats": "rollup -c",
     "build:app": "vite build",
     "build:lib": "rollup -c",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
     "clean": "rm -rf dist node_modules",
     "validate": "npm run lint && npm run build",
     "vercel-build": "npm run build",
@@ -63,33 +66,54 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "unpkg": "dist/json-fields.umd.min.js",
+  "jsdelivr": "dist/json-fields.umd.min.js",
   "peerDependencies": {
+    "@chakra-ui/react": "^3.24.2",
+    "@emotion/react": "^11.14.0",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },
-  "optionalDependencies": {
-    "@chakra-ui/react": "^3.24.2",
-    "@emotion/react": "^11.14.0"
+  "peerDependenciesMeta": {
+    "@chakra-ui/react": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
+    "@chakra-ui/react": "^3.24.2",
+    "@emotion/react": "^11.14.0",
     "@eslint/js": "^9.32.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-node-resolve": "^15.3.1",
     "@rollup/plugin-terser": "^0.4.4",
+    "@tailwindcss/postcss": "^4.1.12",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.32.0",
+    "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "gzip-size": "^7.0.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rollup": "^4.46.2",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "tailwindcss": "^4.1.12",
+    "util-inspect": "^0.1.8",
     "vite": "^7.1.0"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0"
   }
 }

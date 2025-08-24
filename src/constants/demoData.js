@@ -1,0 +1,171 @@
+export const sectionsConfig = [
+  {
+    id: 'profile',
+    title: 'Profile',
+    description: 'Basic information',
+    fields: [
+      'avatarUrl',
+      'profilePhoto',
+      'coverImg',
+      'galleryUrls',
+      'name',
+      'email',
+      'website',
+      'role',
+      'status',
+      'joinDate',
+      'age',
+      'salary',
+      'rating',
+    ],
+    collapsible: true,
+    defaultOpen: true,
+  },
+  {
+    id: 'about',
+    title: 'About',
+    description: 'Biography, skills, tags, headers',
+    fields: ['bio', 'skills', 'tags', 'headers'],
+    collapsible: true,
+    defaultOpen: true,
+  },
+  {
+    id: 'preferences',
+    title: 'Preferences',
+    description: 'Theme & Notifications',
+    fields: ['preferences.theme', 'preferences.notifications', 'isActive'],
+    collapsible: true,
+    defaultOpen: true,
+  },
+  {
+    id: 'security',
+    title: 'Security',
+    fields: ['password'],
+    collapsible: true,
+    defaultOpen: false,
+  },
+]
+// Demo data and defaults for JsonFields demo
+
+export const sampleFieldConfig = {
+  email: { type: 'email' },
+  website: {
+    type: 'url',
+    description: 'Personal or company website URL.',
+    descriptionPlacement: 'input',
+  },
+  joinDate: { type: 'date', description: 'Date you joined the organization.' },
+  password: {
+    type: 'password',
+    description: 'Use a strong password with 8+ characters.',
+    descriptionPlacement: 'input',
+  },
+  avatarUrl: {
+    type: 'file',
+    label: 'Avatar',
+    description: 'Upload a square image for best results.',
+  },
+  profilePhoto: { type: 'file', label: 'Profile Photo', description: 'Your main profile image.' },
+  coverImg: {
+    type: 'file',
+    label: 'Cover Image',
+    description: 'Large banner shown on your profile.',
+  },
+  galleryUrls: { type: 'files', label: 'Gallery', description: 'Drag and drop multiple images.' },
+  role: {
+    type: 'select',
+    options: ['developer', 'designer', 'manager', 'analyst', 'intern'],
+    description: 'Choose your primary role.',
+  },
+  status: {
+    type: 'segment',
+    options: ['draft', 'review', 'published'],
+    description: 'Profile workflow status.',
+  },
+  age: {
+    type: 'number',
+    min: 0,
+    max: 120,
+    step: 1,
+    description: 'Enter your age in years.',
+    descriptionPlacement: 'input',
+  },
+  salary: { type: 'number', min: 0, step: 1000, description: 'Annual compensation (USD).' },
+  rating: {
+    type: 'slider',
+    min: 0,
+    max: 100,
+    step: 1,
+    description: 'Self-assessed proficiency score.',
+    descriptionPlacement: 'input',
+  },
+  skills: {
+    type: 'multi-select',
+    options: [
+      'React',
+      'Vue',
+      'Angular',
+      'JavaScript',
+      'TypeScript',
+      'Node.js',
+      'Python',
+      'Java',
+      'C++',
+    ],
+  },
+  tags: {
+    type: 'tags',
+    description: 'Keywords to categorize your profile.',
+    descriptionPlacement: 'label',
+  },
+  body: { type: 'key-value-list', showHeader: false, description: 'Flexible key/value pairs.' },
+  headers: {
+    type: 'object',
+    description: 'HTTP headers for API requests.',
+    descriptionPlacement: 'label',
+  },
+  bio: {
+    type: 'textarea',
+    rows: 3,
+    description: 'A short introduction about yourself.',
+    descriptionPlacement: 'input',
+  },
+}
+
+export const FIELD_CONFIG_DEFAULT = JSON.stringify(sampleFieldConfig, null, 2)
+
+export const sampleFormDataRich = JSON.stringify(
+  {
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    website: 'https://example.com',
+    joinDate: '2024-06-01',
+    password: 'secret',
+    avatarUrl: '',
+    profilePhoto: '',
+    coverImg: '',
+    galleryUrls: [],
+    role: 'designer',
+    status: 'review',
+    age: 32,
+    salary: 120000,
+    rating: 75,
+    skills: ['React', 'Node.js'],
+    tags: ['alpha', 'beta', 'gamma'],
+    body: [
+      {
+        mykey: 'key',
+        myvalue: 'value',
+      },
+    ],
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ...',
+    },
+    bio: 'UX-focused designer and frontend developer.',
+    preferences: { theme: 'dark', notifications: true },
+    isActive: true,
+  },
+  null,
+  2,
+)

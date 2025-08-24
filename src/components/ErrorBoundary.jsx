@@ -1,15 +1,5 @@
-import React from 'react';
-import {
-  Container,
-  Heading,
-  Text,
-  Button,
-  VStack,
-  Alert,
-  Code,
-  Box,
-  Card,
-} from '@chakra-ui/react';
+import React from 'react'
+import { Container, Heading, Text, Button, VStack, Alert, Code, Box, Card } from '@chakra-ui/react'
 
 /**
  * Error Boundary Component
@@ -17,37 +7,37 @@ import {
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
-    super(props);
-    this.state = { 
-      hasError: false, 
+    super(props)
+    this.state = {
+      hasError: false,
       error: null,
       errorInfo: null,
-      errorCount: 0
-    };
+      errorCount: 0,
+    }
   }
 
   static getDerivedStateFromError() {
     // Update state so the next render will show the fallback UI
-    return { hasError: true };
+    return { hasError: true }
   }
 
   componentDidCatch(error, errorInfo) {
     // Log error to console in development
     if (import.meta.env.DEV) {
-      console.error('Error caught by boundary:', error, errorInfo);
+      console.error('Error caught by boundary:', error, errorInfo)
     }
 
     // Update state with error details
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       error,
       errorInfo,
-      errorCount: prevState.errorCount + 1
-    }));
+      errorCount: prevState.errorCount + 1,
+    }))
 
     // In production, you might want to log to an error reporting service
     if (import.meta.env.PROD && import.meta.env.VITE_ENABLE_ERROR_REPORTING === 'true') {
       // Example: logErrorToService(error, errorInfo);
-      this.logErrorToService(error, errorInfo);
+      this.logErrorToService(error, errorInfo)
     }
   }
 
@@ -61,23 +51,23 @@ class ErrorBoundary extends React.Component {
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
       url: window.location.href,
-    };
-    
-    console.log('Would send to error service:', errorData);
-  };
+    }
+
+    console.log('Would send to error service:', errorData)
+  }
 
   handleReset = () => {
-    this.setState({ 
-      hasError: false, 
+    this.setState({
+      hasError: false,
       error: null,
-      errorInfo: null 
-    });
-    
+      errorInfo: null,
+    })
+
     // Optionally reload the page for a fresh start
     if (this.state.errorCount > 2) {
-      window.location.reload();
+      window.location.reload()
     }
-  };
+  }
 
   render() {
     if (this.state.hasError) {
@@ -101,18 +91,21 @@ class ErrorBoundary extends React.Component {
                     😔 Application Error
                   </Heading>
                   <Text color="fg.muted" mb={4}>
-                    Don't worry, your data is safe. This error has been logged and we'll look into it.
+                    Don't worry, your data is safe. This error has been logged and we'll look into
+                    it.
                   </Text>
                 </Box>
 
                 {import.meta.env.DEV && this.state.error && (
                   <Box>
-                    <Text fontWeight="bold" mb={2}>Error Details (Development Only):</Text>
+                    <Text fontWeight="bold" mb={2}>
+                      Error Details (Development Only):
+                    </Text>
                     <Card.Root variant="outline" bg="red.50" _dark={{ bg: 'red.900' }}>
                       <Card.Body>
-                        <Code 
-                          as="pre" 
-                          fontSize="xs" 
+                        <Code
+                          as="pre"
+                          fontSize="xs"
                           overflowX="auto"
                           whiteSpace="pre-wrap"
                           wordBreak="break-word"
@@ -127,22 +120,18 @@ class ErrorBoundary extends React.Component {
                 )}
 
                 <VStack gap={3}>
-                  <Button 
-                    colorPalette="blue" 
-                    onClick={this.handleReset}
-                    width="full"
-                  >
+                  <Button colorPalette="blue" onClick={this.handleReset} width="full">
                     Try Again
                   </Button>
-                  <Button 
+                  <Button
                     variant="outline"
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => (window.location.href = '/')}
                     width="full"
                   >
                     Go to Home
                   </Button>
                   {this.state.errorCount > 1 && (
-                    <Button 
+                    <Button
                       variant="ghost"
                       colorPalette="red"
                       onClick={() => window.location.reload()}
@@ -160,11 +149,11 @@ class ErrorBoundary extends React.Component {
             </Card.Body>
           </Card.Root>
         </Container>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
-export default ErrorBoundary;
+export default ErrorBoundary
