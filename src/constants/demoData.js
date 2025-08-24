@@ -48,19 +48,57 @@ export const sectionsConfig = [
 // Demo data and defaults for JsonFields demo
 
 export const sampleFieldConfig = {
-  email: { type: 'email',  },
-  website: { type: 'url', description: 'Personal or company website URL.', descriptionPlacement: 'input' },
+  email: { type: 'email' },
+  website: {
+    type: 'url',
+    description: 'Personal or company website URL.',
+    descriptionPlacement: 'input',
+  },
   joinDate: { type: 'date', description: 'Date you joined the organization.' },
-  password: { type: 'password', description: 'Use a strong password with 8+ characters.', descriptionPlacement: 'input' },
-  avatarUrl: { type: 'file', label: 'Avatar', description: 'Upload a square image for best results.' },
+  password: {
+    type: 'password',
+    description: 'Use a strong password with 8+ characters.',
+    descriptionPlacement: 'input',
+  },
+  avatarUrl: {
+    type: 'file',
+    label: 'Avatar',
+    description: 'Upload a square image for best results.',
+  },
   profilePhoto: { type: 'file', label: 'Profile Photo', description: 'Your main profile image.' },
-  coverImg: { type: 'file', label: 'Cover Image', description: 'Large banner shown on your profile.' },
+  coverImg: {
+    type: 'file',
+    label: 'Cover Image',
+    description: 'Large banner shown on your profile.',
+  },
   galleryUrls: { type: 'files', label: 'Gallery', description: 'Drag and drop multiple images.' },
-  role: { type: 'select', options: ['developer', 'designer', 'manager', 'analyst', 'intern'], description: 'Choose your primary role.' },
-  status: { type: 'segment', options: ['draft', 'review', 'published'], description: 'Profile workflow status.' },
-  age: { type: 'number', min: 0, max: 120, step: 1, description: 'Enter your age in years.', descriptionPlacement: 'input' },
+  role: {
+    type: 'select',
+    options: ['developer', 'designer', 'manager', 'analyst', 'intern'],
+    description: 'Choose your primary role.',
+  },
+  status: {
+    type: 'segment',
+    options: ['draft', 'review', 'published'],
+    description: 'Profile workflow status.',
+  },
+  age: {
+    type: 'number',
+    min: 0,
+    max: 120,
+    step: 1,
+    description: 'Enter your age in years.',
+    descriptionPlacement: 'input',
+  },
   salary: { type: 'number', min: 0, step: 1000, description: 'Annual compensation (USD).' },
-  rating: { type: 'slider', min: 0, max: 100, step: 1, description: 'Self-assessed proficiency score.', descriptionPlacement: 'input' },
+  rating: {
+    type: 'slider',
+    min: 0,
+    max: 100,
+    step: 1,
+    description: 'Self-assessed proficiency score.',
+    descriptionPlacement: 'input',
+  },
   skills: {
     type: 'multi-select',
     options: [
@@ -75,10 +113,23 @@ export const sampleFieldConfig = {
       'C++',
     ],
   },
-  tags: { type: 'tags', description: 'Keywords to categorize your profile.', descriptionPlacement: 'label' },
+  tags: {
+    type: 'tags',
+    description: 'Keywords to categorize your profile.',
+    descriptionPlacement: 'label',
+  },
   body: { type: 'key-value-list', showHeader: false, description: 'Flexible key/value pairs.' },
-  headers: { type: 'object', description: 'HTTP headers for API requests.', descriptionPlacement: 'label' },
-  bio: { type: 'textarea', rows: 3, description: 'A short introduction about yourself.', descriptionPlacement: 'input' },
+  headers: {
+    type: 'object',
+    description: 'HTTP headers for API requests.',
+    descriptionPlacement: 'label',
+  },
+  bio: {
+    type: 'textarea',
+    rows: 3,
+    description: 'A short introduction about yourself.',
+    descriptionPlacement: 'input',
+  },
 }
 
 export const FIELD_CONFIG_DEFAULT = JSON.stringify(sampleFieldConfig, null, 2)
