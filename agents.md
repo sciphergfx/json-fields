@@ -1,15 +1,15 @@
-# Agents Guide: Building Advanced Forms with json-to-table
+# Agents Guide: Building Advanced Forms with json-fields
 
 This document teaches an LLM (or any agent) how to use this package to generate rich, editable forms from JSON with fine-grained renderer control.
 
 ## Core Concept
-- Import `Fields` from `lib` and render it with:
+- Import `Fields` from the package and render it with:
   - `initialJson`: the JSON (string) to edit
   - `fieldConfig`: per-field type hints and options
   - Optional: sections, styling, and custom renderers for full control
 
 ```jsx
-import { Fields } from './lib'
+import { Fields } from '@sciphergfx/json-fields'
 
 <Fields
   initialJson={JSON.stringify({ name: 'Jane', email: 'jane@example.com' })}
@@ -17,6 +17,35 @@ import { Fields } from './lib'
   saveButtonText="Save"
   cancelButtonText="Reset"
 />
+```
+
+## Quickstart
+
+Copy–pasteable minimal usage with sections and common field types:
+
+```jsx
+import React from 'react'
+import { Fields } from '@sciphergfx/json-fields'
+
+export default function SimpleJsonForm() {
+  const initialData = { /* ...your object... */ }
+  const fieldConfig = { /* ...your config... */ }
+  const sections = [ /* ...your sections... */ ]
+
+  return (
+    <Fields
+      initialJson={JSON.stringify(initialData)}
+      fieldConfig={fieldConfig}
+      sections={sections}
+      includeUnsectioned
+      onSave={(nested, flat) => console.log('save', nested, flat)}
+      onCancel={() => console.log('cancel')}
+      onFieldChange={(k, v) => console.log('change', k, v)}
+      saveButtonText="Save Changes"
+      cancelButtonText="Reset Form"
+    />
+  )
+}
 ```
 
 ## Important Props for Agents
