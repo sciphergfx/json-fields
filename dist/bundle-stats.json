@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2025-08-21T06:27:41.349Z",
+  "generatedAt": "2025-08-24T01:39:25.976Z",
   "files": [
     {
-      "fileName": "index.esm.js",
-      "rawBytes": 27580,
-      "gzipBytes": 7020
+      "fileName": "json-fields.umd.min.js",
+      "rawBytes": 38319,
+      "gzipBytes": 8625
     }
   ],
   "totals": {
-    "rawBytes": 27580,
-    "gzipBytes": 7020
+    "rawBytes": 38319,
+    "gzipBytes": 8625
   }
 }
