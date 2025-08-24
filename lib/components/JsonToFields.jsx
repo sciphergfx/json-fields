@@ -88,6 +88,96 @@ const Fields = ({
     Label: renderers.Label || 'label',
   }
 
+  // Segment field renderer (single-select segmented control)
+  const renderSegmentField = (key, value, displayName, fieldTypeConfig) => {
+    const ctx = {
+      key,
+      value,
+      displayName,
+      fieldTypeConfig,
+      formData,
+      onChange: (val) => handleFieldChange(key, val),
+      UI,
+      props: { uiLibrary, customStyles, inlineLabels, ...props },
+    }
+
+    const labelEl =
+      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
+      (typeof customLabelRenderers?.segment === 'function' && customLabelRenderers.segment(ctx)) || (
+        <UI.Label className={getUIClasses(uiLibrary, 'Label')} style={{ ...customStyles.fieldLabel, marginBottom: inlineLabels ? 0 : '0.5rem' }}>
+          {displayName}
+        </UI.Label>
+      )
+
+    const controlEl =
+      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
+      (typeof customControlRenderers?.segment === 'function' && customControlRenderers.segment(ctx)) || (
+        <UI.HStack
+          className={getUIClasses(uiLibrary, 'HStack')}
+          style={{
+            [inlineLabels ? 'flex' : 'width']: inlineLabels ? 1 : '100%',
+            gap: '0.5rem',
+            flexWrap: 'wrap',
+            ...customStyles.hstack,
+          }}
+        >
+          {(fieldTypeConfig.options || []).map((opt) => {
+            const selected = (formData[key] ?? value) === opt
+            return (
+              <UI.Button
+                key={opt}
+                type="button"
+                onClick={() => handleFieldChange(key, opt)}
+                className={getUIClasses(uiLibrary, 'Button', selected ? 'primary' : 'secondary')}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  border: selected ? '1px solid var(--segment-selected-border, #6366f1)' : '1px solid rgba(0,0,0,0.1)',
+                  background: selected ? 'var(--segment-selected-bg, #eef2ff)' : 'var(--segment-bg, #fff)',
+                  color: selected ? 'var(--segment-selected-fg, #3730a3)' : 'inherit',
+                  cursor: 'pointer',
+                }}
+              >
+                {opt}
+              </UI.Button>
+            )
+          })}
+        </UI.HStack>
+      )
+
+    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
+    const descEl = description ? (
+      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem' }}>
+        {description}
+      </UI.Text>
+    ) : null
+
+    return (
+      <UI.Box
+        key={key}
+        className={getUIClasses(uiLibrary, 'Box')}
+        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
+      >
+        {inlineLabels ? (
+          <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
+            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              {controlEl}
+              {descEl}
+            </UI.Box>
+          </UI.Box>
+        ) : (
+          <>
+            {labelEl}
+            {placement === 'label' ? descEl : null}
+            {controlEl}
+            {placement === 'input' ? descEl : null}
+          </>
+        )}
+      </UI.Box>
+    )
+  }
+
   // Key-Value list renderer (generic object/array of objects)
   const renderKeyValueListField = (key, value, displayName, fieldTypeConfig = {}) => {
     const originalIsArray = Array.isArray(value)
@@ -223,99 +313,6 @@ const Fields = ({
           </UI.Button>
         </UI.VStack>
         {placement === 'input' ? descEl : null}
-      </UI.Box>
-    )
-  }
-
-  // Segment field renderer (segmented control)
-  const renderSegmentField = (key, value, displayName, fieldTypeConfig) => {
-    const options = Array.isArray(fieldTypeConfig.options) ? fieldTypeConfig.options : []
-    const current = (formData[key] ?? value ?? fieldTypeConfig.default ?? options[0]) || ''
-
-    const ctx = {
-      key,
-      value: current,
-      displayName,
-      fieldTypeConfig,
-      formData,
-      onChange: (val) => handleFieldChange(key, val),
-      UI,
-      props: { uiLibrary, customStyles, inlineLabels, ...props },
-    }
-
-    const labelEl =
-      (typeof customLabelRenderers?.[key] === 'function' && customLabelRenderers[key](ctx)) ||
-      (typeof customLabelRenderers?.segment === 'function' && customLabelRenderers.segment(ctx)) || (
-        <UI.Label className={getUIClasses(uiLibrary, 'Label')} style={{ ...customStyles.fieldLabel, marginBottom: inlineLabels ? 0 : '0.5rem' }}>
-          {displayName}
-        </UI.Label>
-      )
-
-    const controlDefault = (
-      <UI.HStack className={getUIClasses(uiLibrary, 'HStack')} style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
-        {options.map((opt) => {
-          const isActive = String(opt) === String(current)
-          const content =
-            typeof fieldTypeConfig.optionRenderer === 'function'
-              ? fieldTypeConfig.optionRenderer({ option: opt, isActive, ...ctx })
-              : String(opt)
-          return (
-            <UI.Button
-              key={`${key}-${String(opt)}`}
-              type="button"
-              aria-pressed={isActive}
-              onClick={() => handleFieldChange(key, opt)}
-              className={getUIClasses(uiLibrary, 'Button', isActive ? 'default' : 'secondary')}
-              style={{
-                padding: '6px 10px',
-                borderRadius: '999px',
-                border: isActive ? '1px solid #6366f1' : '1px solid #e5e7eb',
-                background: isActive ? '#eef2ff' : 'white',
-                color: isActive ? '#3730a3' : 'inherit',
-                ...customStyles.button,
-              }}
-            >
-              {content}
-            </UI.Button>
-          )
-        })}
-      </UI.HStack>
-    )
-
-    const controlEl =
-      (typeof customControlRenderers?.[key] === 'function' && customControlRenderers[key](ctx)) ||
-      (typeof customControlRenderers?.segment === 'function' && customControlRenderers.segment(ctx)) ||
-      controlDefault
-
-    const { description, placement } = getDescriptionMeta(key, fieldTypeConfig)
-    const descEl = description ? (
-      <UI.Text className={getUIClasses(uiLibrary, 'Text')} style={{ fontSize: '12px', opacity: 0.8, marginTop: '0.25rem' }}>
-        {description}
-      </UI.Text>
-    ) : null
-
-    return (
-      <UI.Box
-        key={key}
-        className={getUIClasses(uiLibrary, 'Box')}
-        style={{ marginBottom: '1rem', ...customStyles.fieldContainer }}
-      >
-        {inlineLabels ? (
-          <UI.Box style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <UI.Box style={{ minWidth: '30%' }}>{labelEl}</UI.Box>
-            <UI.Box style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-              {controlEl}
-              {descEl}
-            </UI.Box>
-          </UI.Box>
-        ) : (
-          <>
-            {labelEl}
-            {placement === 'label' ? descEl : null}
-            {controlEl}
-            {placement === 'input' ? descEl : null}
-          </>
-        )}
       </UI.Box>
     )
   }

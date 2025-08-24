@@ -33,8 +33,7 @@ export function getFormStyles(palette, theme) {
     fieldContainer: { marginBottom: '20px' },
     fieldLabel: {
       color: theme === 'light' ? palette.text : '#ffffff',
-      fontWeight: '500',
-      marginBottom: '2px',
+      fontWeight: '500', 
       fontSize: '14px',
       display: 'block',
     },
